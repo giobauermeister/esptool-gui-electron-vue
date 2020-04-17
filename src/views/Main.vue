@@ -6,7 +6,7 @@
         <b-form-input v-model="comPort" placeholder=""></b-form-input>
         <template v-slot:prepend>
           <b-dropdown size="sm" text="Select COM port" variant="primary">
-            <b-dropdown-item v-bind:key="comPort" v-for="comPort in comPortsList">{{ comPort.value }}</b-dropdown-item>
+            <b-dropdown-item v-on:click="setComPort(item.port)" v-bind:key="item.port" v-for="item in comPortsList">{{ item.port }}</b-dropdown-item>
           </b-dropdown>
         </template>
       </b-input-group>
@@ -14,10 +14,10 @@
 
     <div class="baud-input">
       <b-input-group size="sm">
-        <b-form-input id="baudrate-input" v-model="baudrateSpeed" placeholder="">teste</b-form-input>
+        <b-form-input v-model="baudrateSpeed" id="baudrate-input" placeholder=""></b-form-input>
         <template v-slot:prepend>
           <b-dropdown size="sm" text="Select baudrate" variant="primary">
-            <b-dropdown-item v-on:click="setInput" v-bind:key="baudrate" v-for="baudrate in baudrateList">{{ baudrate.value }}</b-dropdown-item> 
+            <b-dropdown-item v-on:click="setBaudrate(baudrate.value)" v-bind:key="baudrate.value" v-for="baudrate in baudrateList">{{ baudrate.value }}</b-dropdown-item> 
           </b-dropdown>
         </template>
       </b-input-group>
@@ -61,15 +61,15 @@ export default {
     return {
       firmwareFile: null,
       webpageFile: null,
-      //comPort: "COM1",
-      //baudrateSpeed: 9600,
+      comPort: "com port",
+      baudrateSpeed: "bau rate",
       selected: null,
       comPortsList: [
-        { value: 'COM1', text: 'COM1' },
-        { value: 'COM2', text: 'COM2' },
-        { value: 'COM3', text: 'COM3' },
-        { value: 'COM4', text: 'COM4' },
-        { value: 'COM5', text: 'COM5' }
+        { port: "COM1", text: 'COM1' },
+        { port: "COM2", text: 'COM2' },
+        { port: "COM3", text: 'COM3' },
+        { port: "COM4", text: 'COM4' },
+        { port: "COM5", text: 'COM5' }
       ],
       baudrateList: [
         { value: 9600 },
@@ -79,8 +79,13 @@ export default {
     }
   },
   methods: {
-    setInput: function () {
-      console.log(this.comPortsList[0].value);      
+    setBaudrate: function (baudrate) {
+      console.log(baudrate);
+      this.baudrateSpeed = baudrate;      
+    },
+    setComPort: function (comPort) {
+      console.log(comPort);
+      this.comPort = comPort;
     }
   }
 };

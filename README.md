@@ -22,3 +22,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Electron inter process communication tutorial
+https://www.tutorialspoint.com/electron/electron_inter_process_communication.htm

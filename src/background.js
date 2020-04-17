@@ -19,11 +19,17 @@ function createWindow () {
   win = new BrowserWindow({ 
     width: 700, 
     height: 500,
-    resizable: false, 
+    resizable: false,
+    title: "ESP32 Flasher esptool.py GUI", 
     webPreferences: {
       nodeIntegration: true,
-      devTools: false
+      devTools: true
   } })
+  win.setMenu(null);
+  win.on('page-title-updated', function(e) {
+    e.preventDefault()   
+  });
+
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
