@@ -6,8 +6,7 @@
         <b-form-input v-model="comPort" placeholder=""></b-form-input>
         <template v-slot:prepend>
           <b-dropdown size="sm" text="Select COM port" variant="primary">
-            <b-dropdown-item>COM1</b-dropdown-item>
-            <b-dropdown-item>COM2</b-dropdown-item>
+            <b-dropdown-item v-bind:key="comPort" v-for="comPort in comPortsList">{{ comPort.value }}</b-dropdown-item>
           </b-dropdown>
         </template>
       </b-input-group>
@@ -15,12 +14,10 @@
 
     <div class="baud-input">
       <b-input-group size="sm">
-        <b-form-input v-model="baudrateSpeed" placeholder=""></b-form-input>
+        <b-form-input id="baudrate-input" v-model="baudrateSpeed" placeholder="">teste</b-form-input>
         <template v-slot:prepend>
           <b-dropdown size="sm" text="Select baudrate" variant="primary">
-            <b-dropdown-item v-model="selected" :options="options">9600</b-dropdown-item>
-            <!-- <b-dropdown-item>115200</b-dropdown-item>
-            <b-dropdown-item>921600</b-dropdown-item> -->
+            <b-dropdown-item v-on:click="setInput" v-bind:key="baudrate" v-for="baudrate in baudrateList">{{ baudrate.value }}</b-dropdown-item> 
           </b-dropdown>
         </template>
       </b-input-group>
@@ -64,14 +61,26 @@ export default {
     return {
       firmwareFile: null,
       webpageFile: null,
-      comPort: "COM1",
-      baudrateSpeed: 9600,
+      //comPort: "COM1",
+      //baudrateSpeed: 9600,
       selected: null,
-      options: [
+      comPortsList: [
         { value: 'COM1', text: 'COM1' },
         { value: 'COM2', text: 'COM2' },
-        { value: 'COM3', text: 'COM3' }
-      ]
+        { value: 'COM3', text: 'COM3' },
+        { value: 'COM4', text: 'COM4' },
+        { value: 'COM5', text: 'COM5' }
+      ],
+      baudrateList: [
+        { value: 9600 },
+        { value: 115200 },
+        { value: 921600 }
+      ]        
+    }
+  },
+  methods: {
+    setInput: function () {
+      console.log(this.comPortsList[0].value);      
     }
   }
 };
