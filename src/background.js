@@ -23,7 +23,7 @@ function createWindow () {
     title: "ESP32 Flasher esptool.py GUI", 
     webPreferences: {
       nodeIntegration: true,
-      devTools: true
+      devTools: false
   } })
   win.setMenu(null);
   win.on('page-title-updated', function(e) {
