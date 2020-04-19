@@ -17,8 +17,8 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ 
-    width: 700, 
-    height: 500,
+    width: 500, 
+    height: 450,
     resizable: false,
     title: "ESP32 Flasher esptool.py GUI", 
     webPreferences: {

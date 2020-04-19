@@ -22,7 +22,8 @@ body {
     background: radial-gradient(circle, rgba(237,237,237,1) 0%, rgba(215,215,215,1) 47%, rgba(219,219,219,1) 100%);
 }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: Avenir, Helvetica, Arial, sans-serif; */
+  font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
@@ -40,4 +41,5 @@ body {
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+::-webkit-scrollbar { display: none; }
 </style>
