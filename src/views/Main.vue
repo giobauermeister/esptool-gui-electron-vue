@@ -2,7 +2,6 @@
   <div class="home">
     <b-row>
       <b-col cols="8">
-
         <div class="com-input">
           <b-input-group size="sm">
             <b-form-input v-model="comPort" placeholder></b-form-input>
@@ -34,76 +33,97 @@
         </div>
 
         <div class="firmware-input">
-      <b-form-file
-        size="sm"
-        v-model="firmwareFile"
-        :state="Boolean(firmwareFile)"
-        placeholder="Select firmware file"
-        drop-placeholder="Drop file here..."
-      ></b-form-file>
-    </div>
+          <b-form-file
+            size="sm"
+            v-model="firmwareFile"
+            :state="Boolean(firmwareFile)"
+            placeholder="Select firmware file"
+            drop-placeholder="Drop file here..."
+          ></b-form-file>
+        </div>
 
-    <div class="webpage-input">
-      <b-form-file style="font-weight: 100!important;"
-        size="sm"
-        v-model="webpageFile"
-        :state="Boolean(webpageFile)"
-        placeholder="Select spiffs file"
-        drop-placeholder="Drop file here..."
-      ></b-form-file>
-    </div>
-
-
+        <div class="webpage-input">
+          <b-form-file
+            style="font-weight: 100!important;"
+            size="sm"
+            v-model="webpageFile"
+            :state="Boolean(webpageFile)"
+            placeholder="Select spiffs file"
+            drop-placeholder="Drop file here..."
+          ></b-form-file>
+        </div>
       </b-col>
 
       <b-col>
-
-
-        <div class="btn-test-connection" >
-          <b-button v-on:click="toggle" style="width: 120px;" size="sm" variant="dark">Test connection</b-button>
+        <div class="btn-test-connection">
+          <b-button
+            v-on:click="testConnection"
+            style="width: 120px;"
+            size="sm"
+            variant="dark"
+          >Test connection</b-button>
         </div>
 
         <div class="btn-flash">
-          <b-button style="width: 120px;" size="sm" variant="dark">Flash</b-button>
+          <b-button v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
         </div>
 
         <div class="spinner-container">
           <div class="check-icon">
-            <svg v-if="showCheckMark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check-circle" class="svg-inline--fa fa-check-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path></svg>
-            <b-spinner v-if="showSpinner" style="width: 4rem; height: 4rem; "
-        variant="info"
-        type="grow"
-      ></b-spinner>
-          </div>          
+            <svg
+              v-if="showCheckMark"
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="check-circle"
+              class="svg-inline--fa fa-check-circle fa-w-16"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="currentColor"
+                d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+              />
+            </svg>
+            <b-spinner
+              v-if="showSpinner"
+              style="width: 4rem; height: 4rem; "
+              variant="info"
+              type="grow"
+            ></b-spinner>
+          </div>
         </div>
-        
-
       </b-col>
     </b-row>
 
-
     <div class="flash-progress">
-      <b-progress :value="flashProgressValue" variant="info" striped show-progress :animated="animate" class="mt-2"></b-progress>
+      <b-progress
+        :value="flashProgressValue"
+        variant="info"
+        striped
+        show-progress
+        :animated="animate"
+        class="mt-2"
+      ></b-progress>
     </div>
 
     <div class="terminal-container">
-      <div class="terminal">
+      <textarea class="terminal terminal-data" v-model="terminalData"></textarea>
+      <!-- <div class="terminal">
         <p class="terminal-data" v-bind:key="terminalData.text"
                   v-for="terminalData in terminalDataLines">{{ terminalData.text }}<br></p>
         
-      </div>
+      </div>-->
       <!-- <input class="terminal" v-model="terminalData" readonly onfocus="this.blur();"> -->
     </div>
-
-
-
-
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 //import HelloWorld from '@/components/HelloWorld.vue'
+const { ipcRenderer } = require("electron");
 
 export default {
   name: "Main",
@@ -128,28 +148,51 @@ export default {
         { port: "COM5", text: "COM5" }
       ],
       baudrateList: [{ value: 9600 }, { value: 115200 }, { value: 921600 }],
+      terminalData: "hello world",
       terminalDataLines: [
         { line: 1, text: "line 1" },
         { line: 2, text: "line 2" },
         { line: 3, text: "line 3" },
         { line: 4, text: "line 4" },
         { line: 5, text: "line 5" }
-      ]
+      ],
+      cmdLineArgs: {
+        baudrate: this.baudrate,
+        comPort: this.comPort
+      }
     };
   },
   methods: {
     setBaudrate: function(baudrate) {
       console.log(baudrate);
       this.baudrateSpeed = baudrate;
+      this.cmdLineArgs.baudrate = baudrate;
+      //ipcRenderer.send('asynchronous-message', 'hello world');
     },
     setComPort: function(comPort) {
       console.log(comPort);
       this.comPort = comPort;
+      this.cmdLineArgs.comPort = comPort;
     },
-    toggle: function() {
+    testConnection: function() {
       this.showSpinner = !this.showSpinner;
       this.showCheckMark = !this.showCheckMark;
-    }
+      this.terminalData = this.terminalData + "\n" + "test";
+
+      this.cmdLineArgs.baudrate = this.baudrateSpeed;
+      this.cmdLineArgs.comPort = this.comPort;
+
+      // Async message handler
+      // ipcRenderer.on("asynchronous-reply", (event, arg) => {
+      //   console.log(arg);
+      // });
+
+      // Async message sender
+      //ipcRenderer.send("cmdLineArgs", this.cmdLineArgs);
+
+      console.log(ipcRenderer.sendSync('cmdLineArgs', this.cmdLineArgs))
+    },
+    flash: function() {}
   }
 };
 </script>
@@ -176,7 +219,7 @@ export default {
   padding: 10px 10px 10px 0px;
   text-align: left;
 }
-.btn-flash{
+.btn-flash {
   width: 100%;
   padding: 5px 10px 10px 0px;
   text-align: left;
@@ -197,7 +240,7 @@ export default {
   /* vertical-align: auto; */
 }
 .check-icon > svg > path {
-  fill: rgb(0, 180, 105);    
+  fill: rgb(0, 180, 105);
 }
 .flash-progress {
   width: 100%;
@@ -208,16 +251,18 @@ export default {
   padding: 0px 10px 10px 10px;
 }
 .terminal {
-  background-color: rgb(47, 47, 47); 
-  width: 100%; 
+  background-color: rgb(47, 47, 47);
+  width: 100%;
   height: 220px;
   border-radius: 8px;
   text-align: start;
 }
 .terminal-data {
   color: aliceblue;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 15px;
+  line-height: 14px;
   /* display: inline; */
-  /* margin-top: -20px; */
+  padding: 5px;
 }
 </style>

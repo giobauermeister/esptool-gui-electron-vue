@@ -1,5 +1,8 @@
 'use strict'
 
+const {ipcMain} = require('electron')
+const { spawn } = require('child_process');
+
 import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol,
@@ -82,6 +85,53 @@ app.on('ready', async () => {
 
   }
   createWindow()
+})
+
+function runEsptoolPy() {
+  const python = spawn('esptool.py', ['-b', '921600', '-p', 'COM4', 'read_mac']);
+  python.stdout.on(
+    'data',
+    (data) => console.log(data.toString())
+  );
+}
+(() => {
+  try {
+    runEsptoolPy()
+    // process.exit(0)
+  } catch (e) {
+    console.error(e.stack);
+    process.exit(1);
+  }
+})();
+
+// Event handler for asynchronous incoming messages
+ipcMain.on('cmdLineArgs', (event, cmdLineArgs) => {
+  console.log("Baudrate: " + cmdLineArgs.baudrate);
+  console.log("ComPort: " + cmdLineArgs.comPort);
+  //const python = spawn('esptool.py', ['-b', '921600', '-p', 'COM4', 'read_mac']);
+  runEsptoolPy();
+  // python.stdout.on('data', function (data) {
+  //   //console.log('Pipe data from python script ...');
+  //   console.log(data.toString());
+  //   // var esptoolData = data.toString();
+  //   // var mac = esptoolData.search("MAC: ");
+  //   // if(mac!=-1)
+  //   // {
+  //   //     console.log("MAC position: " + mac);
+  //   //     var macAddress = esptoolData.substring(mac+5, mac+22).toUpperCase();
+  //   //     console.log("MAC Address: " + macAddress);        
+  //   // }    
+  // });
+
+  
+
+  // Event emitter for sending asynchronous messages
+  //event.sender.send('asynchronous-reply', 'received data!')
+  event.returnValue = 'exit esptool.py'
+
+  // python.on('close', (code) => {
+  //   console.log(`child process close all stdio with code ${code}`);
+  // });
 })
 
 // Exit cleanly on request from parent process in development mode.
