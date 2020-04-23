@@ -1,4 +1,5 @@
 'use strict'
+var path = require('path')
 
 const {ipcMain} = require('electron')
 const { spawn } = require('child_process');
@@ -21,9 +22,11 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ 
-    width: 500, 
+    width: 600, 
     height: 450,
+    icon: path.join(__dirname, 'build/flash.png'),
     resizable: true,
+    useContentSize: true,
     title: "ESP32 Flasher esptool.py GUI", 
     webPreferences: {
       nodeIntegration: true,

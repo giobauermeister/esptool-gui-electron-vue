@@ -141,11 +141,13 @@ export default {
       showErrorMark: false,
       animate: true,
       comPortsList: [
-        { port: "COM1", text: "COM1" },
-        { port: "COM2", text: "COM2" },
-        { port: "COM3", text: "COM3" },
-        { port: "COM4", text: "COM4" },
-        { port: "COM5", text: "COM5" }
+        { port: "COM1" },
+        { port: "COM2" },
+        { port: "COM3" },
+        { port: "COM4" },
+        { port: "COM5" },
+        { port: "COM6" },
+        { port: "COM7" }
       ],
       baudrateList: [{ value: 115200 }, { value: 921600 }],
       terminalData: "",
@@ -257,12 +259,12 @@ export default {
 }
 .btn-test-connection {
   width: 100%;
-  padding: 10px 10px 10px 0px;
+  padding: 10px 10px 10px 10px;
   text-align: left;
 }
 .btn-flash {
   width: 100%;
-  padding: 5px 10px 10px 0px;
+  padding: 5px 10px 10px 10px;
   text-align: left;
 }
 .spinner-container {
@@ -271,6 +273,7 @@ export default {
   height: 80px;
   display: flex;
   align-items: center;
+  padding: 0px 0px 0px 15px;
   /* margin: 0 auto; */
 }
 .check-icon-container {
