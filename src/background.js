@@ -2,6 +2,7 @@
 
 const {ipcMain} = require('electron')
 const { spawn } = require('child_process');
+//import {PythonShell} from 'python-shell';
 
 import { app, protocol, BrowserWindow } from 'electron'
 import {
@@ -22,7 +23,7 @@ function createWindow () {
   win = new BrowserWindow({ 
     width: 500, 
     height: 450,
-    resizable: false,
+    resizable: true,
     title: "ESP32 Flasher esptool.py GUI", 
     webPreferences: {
       nodeIntegration: true,
@@ -87,51 +88,41 @@ app.on('ready', async () => {
   createWindow()
 })
 
-function runEsptoolPy() {
-  const python = spawn('esptool.py', ['-b', '921600', '-p', 'COM4', 'read_mac']);
-  python.stdout.on(
-    'data',
-    (data) => console.log(data.toString())
-  );
-}
-(() => {
-  try {
-    runEsptoolPy()
-    // process.exit(0)
-  } catch (e) {
-    console.error(e.stack);
-    process.exit(1);
-  }
-})();
-
 // Event handler for asynchronous incoming messages
 ipcMain.on('cmdLineArgs', (event, cmdLineArgs) => {
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
-  //const python = spawn('esptool.py', ['-b', '921600', '-p', 'COM4', 'read_mac']);
-  runEsptoolPy();
-  // python.stdout.on('data', function (data) {
-  //   //console.log('Pipe data from python script ...');
-  //   console.log(data.toString());
-  //   // var esptoolData = data.toString();
-  //   // var mac = esptoolData.search("MAC: ");
-  //   // if(mac!=-1)
-  //   // {
-  //   //     console.log("MAC position: " + mac);
-  //   //     var macAddress = esptoolData.substring(mac+5, mac+22).toUpperCase();
-  //   //     console.log("MAC Address: " + macAddress);        
-  //   // }    
-  // });
-
+  const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'read_mac']);
   
+  var stdoutChunks = [], stderrChunks = [];
+  python.stdout.on('data', (data) => {
+    stdoutChunks = stdoutChunks.concat(data);
+  });
+  python.stdout.on('end', () => {
+      var stdoutContent = Buffer.concat(stdoutChunks).toString();
+      console.log('stdout chars:', stdoutContent.length);
+      console.log(stdoutContent);
+      if(stdoutContent.length > 0) event.sender.send('esptool-output', stdoutContent);
+  });
+  
+  python.stderr.on('data', (data) => {
+    stderrChunks = stderrChunks.concat(data);
+  });
+  python.stderr.on('end', () => {
+      var stderrContent = Buffer.concat(stderrChunks).toString();
+      console.log('stderr chars:', stderrContent.length);
+      console.log(stderrContent);
+      event.sender.send('esptool-error', stderrContent);
+  });
 
-  // Event emitter for sending asynchronous messages
-  //event.sender.send('asynchronous-reply', 'received data!')
-  event.returnValue = 'exit esptool.py'
+  python.on('close', (code) => {
+    console.log(`child process close all stdio with code ${code}`);
+  });
 
-  // python.on('close', (code) => {
-  //   console.log(`child process close all stdio with code ${code}`);
-  // });
+  python.on('exit', (code) => {
+    console.log('Process exited with code', code)
+    event.sender.send('esptool-error-code', code);
+  });
 })
 
 // Exit cleanly on request from parent process in development mode.

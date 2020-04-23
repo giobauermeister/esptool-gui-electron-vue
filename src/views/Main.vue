@@ -69,14 +69,14 @@
         </div>
 
         <div class="spinner-container">
-          <div class="check-icon">
+          <div class="check-icon-container">
             <svg
               v-if="showCheckMark"
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
               data-icon="check-circle"
-              class="svg-inline--fa fa-check-circle fa-w-16"
+              class="check-icon svg-inline--fa fa-check-circle fa-w-16"
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
@@ -86,6 +86,10 @@
                 d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
               />
             </svg>
+
+            <svg v-if="showErrorMark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times-circle" class="error-icon svg-inline--fa fa-times-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"></path></svg>
+
+
             <b-spinner
               v-if="showSpinner"
               style="width: 4rem; height: 4rem; "
@@ -110,12 +114,6 @@
 
     <div class="terminal-container">
       <textarea class="terminal terminal-data" v-model="terminalData"></textarea>
-      <!-- <div class="terminal">
-        <p class="terminal-data" v-bind:key="terminalData.text"
-                  v-for="terminalData in terminalDataLines">{{ terminalData.text }}<br></p>
-        
-      </div>-->
-      <!-- <input class="terminal" v-model="terminalData" readonly onfocus="this.blur();"> -->
     </div>
   </div>
 </template>
@@ -134,12 +132,14 @@ export default {
     return {
       firmwareFile: null,
       webpageFile: null,
-      comPort: "com port",
-      baudrateSpeed: "baudrate",
+      comPort: "",
+      baudrateSpeed: "",
       flashProgressValue: 75,
       selected: null,
-      showSpinner: true,
+      showSpinner: false,
       showCheckMark: false,
+      showErrorMark: false,
+      animate: true,
       comPortsList: [
         { port: "COM1", text: "COM1" },
         { port: "COM2", text: "COM2" },
@@ -147,20 +147,61 @@ export default {
         { port: "COM4", text: "COM4" },
         { port: "COM5", text: "COM5" }
       ],
-      baudrateList: [{ value: 9600 }, { value: 115200 }, { value: 921600 }],
-      terminalData: "hello world",
-      terminalDataLines: [
-        { line: 1, text: "line 1" },
-        { line: 2, text: "line 2" },
-        { line: 3, text: "line 3" },
-        { line: 4, text: "line 4" },
-        { line: 5, text: "line 5" }
-      ],
+      baudrateList: [{ value: 115200 }, { value: 921600 }],
+      terminalData: "",
       cmdLineArgs: {
         baudrate: this.baudrate,
         comPort: this.comPort
       }
     };
+  },
+  mounted() {
+    // Async message handler
+    var esptoolError = "";
+    var esptoolOutput = "";
+    ipcRenderer.on("esptool-error", (event, arg) => {
+      console.log("esptool-error");      
+      console.log(arg);
+      esptoolError = arg;
+      //this.terminalData = "";
+      //this.terminalData = arg;
+    });
+    ipcRenderer.on("esptool-output", (event, arg) => {
+      console.log("esptool-output"); 
+      console.log(arg);
+      esptoolOutput = arg;
+      //this.terminalData = "";
+      //this.terminalData = arg;
+    });
+    ipcRenderer.on("esptool-error-code", (event, errorCode) => {
+      console.log("esptool-error-code");
+      console.log(errorCode);
+      switch(errorCode) {
+        case 0: // got stdout no error
+          this.showSpinner = false;
+          this.showErrorMark = false;
+          this.showCheckMark = true;
+          this.terminalData = "";
+          this.terminalData = esptoolOutput;
+          break;
+        case 1: // got stderr
+          this.showSpinner = false;
+          this.showCheckMark = false;
+          this.showErrorMark = true;
+          this.terminalData = "";
+          this.terminalData = esptoolError;
+          break;
+        case 2:
+          this.showSpinner = false;
+          this.showCheckMark = false;
+          this.showErrorMark = true;
+          this.terminalData = "";
+          this.terminalData = esptoolError;
+          break;
+        default:
+          // code block
+      }
+    });
   },
   methods: {
     setBaudrate: function(baudrate) {
@@ -175,26 +216,26 @@ export default {
       this.cmdLineArgs.comPort = comPort;
     },
     testConnection: function() {
-      this.showSpinner = !this.showSpinner;
-      this.showCheckMark = !this.showCheckMark;
-      this.terminalData = this.terminalData + "\n" + "test";
+      this.showCheckMark = false;
+      this.showErrorMark = false;
+      this.showSpinner = true;      
+      //this.terminalData = this.terminalData + "\n" + "test";
 
       this.cmdLineArgs.baudrate = this.baudrateSpeed;
       this.cmdLineArgs.comPort = this.comPort;
 
-      // Async message handler
-      // ipcRenderer.on("asynchronous-reply", (event, arg) => {
-      //   console.log(arg);
-      // });
+      
 
       // Async message sender
-      //ipcRenderer.send("cmdLineArgs", this.cmdLineArgs);
+      ipcRenderer.send("cmdLineArgs", this.cmdLineArgs);
 
-      console.log(ipcRenderer.sendSync('cmdLineArgs', this.cmdLineArgs))
+      //console.log(ipcRenderer.sendSync('cmdLineArgs', this.cmdLineArgs))
     },
-    flash: function() {}
+    flash: function() {},
   }
 };
+
+
 </script>
 
 <style>
@@ -232,15 +273,18 @@ export default {
   align-items: center;
   /* margin: 0 auto; */
 }
-.check-icon {
+.check-icon-container {
   width: 60px;
   height: 60px;
   margin: auto;
   display: block;
   /* vertical-align: auto; */
 }
-.check-icon > svg > path {
+.check-icon > path {
   fill: rgb(0, 180, 105);
+}
+.error-icon > path {
+  fill: rgb(230, 80, 34);
 }
 .flash-progress {
   width: 100%;

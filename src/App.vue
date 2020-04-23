@@ -20,6 +20,7 @@ body {
     padding: 0;
     background: rgb(237,237,237);
     background: radial-gradient(circle, rgba(237,237,237,1) 0%, rgba(215,215,215,1) 47%, rgba(219,219,219,1) 100%);
+    overflow: hidden;
 }
 #app {
   /* font-family: Avenir, Helvetica, Arial, sans-serif; */
