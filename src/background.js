@@ -5,6 +5,8 @@ const {ipcMain} = require('electron')
 const { spawn } = require('child_process');
 //import {PythonShell} from 'python-shell';
 
+const { dialog } = require('electron')
+
 import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol,
@@ -91,8 +93,26 @@ app.on('ready', async () => {
   createWindow()
 })
 
+var fimwareFilePath, webpageFilePath;
+ipcMain.on('selectFirmwareFilePath', (event, args) => {
+  console.log(args);
+  console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
+    fimwareFilePath = files[0];
+    console.log(files[0]);
+    event.sender.send('firmwareFilePath', files[0]);
+  }));  
+})
+ipcMain.on('selectWebpageFilePath', (event, args) => {
+  console.log(args);
+  console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
+    webpageFilePath = files[0];
+    console.log(files[0]);
+    event.sender.send('webpageFilePath', files[0]);
+  }));  
+})
+
 // Event handler for asynchronous incoming messages
-ipcMain.on('cmdLineArgs', (event, cmdLineArgs) => {
+ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
   const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'read_mac']);
@@ -127,6 +147,53 @@ ipcMain.on('cmdLineArgs', (event, cmdLineArgs) => {
     event.sender.send('esptool-error-code', code);
   });
 })
+
+// Event handler for asynchronous incoming messages
+ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
+  console.log("Baudrate: " + cmdLineArgs.baudrate);
+  console.log("ComPort: " + cmdLineArgs.comPort);
+  console.log("Firmware file: " + fimwareFilePath);
+  console.log("Webpage file: " + webpageFilePath);
+  const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, 
+                                      '-p', cmdLineArgs.comPort, 
+                                      'write_flash', 
+                                      '0x10000', fimwareFilePath,
+                                      '0x290000', webpageFilePath]);
+  
+  var stdoutChunks = [], stderrChunks = [];
+  python.stdout.on('data', (data) => {
+    stdoutChunks = stdoutChunks.concat(data);
+  });
+  python.stdout.on('end', () => {
+      var stdoutContent = Buffer.concat(stdoutChunks).toString();
+      console.log('stdout chars:', stdoutContent.length);
+      console.log(stdoutContent);
+      if(stdoutContent.length > 0) event.sender.send('esptool-output', stdoutContent);
+  });
+  
+  python.stderr.on('data', (data) => {
+    stderrChunks = stderrChunks.concat(data);
+  });
+  python.stderr.on('end', () => {
+      var stderrContent = Buffer.concat(stderrChunks).toString();
+      console.log('stderr chars:', stderrContent.length);
+      console.log(stderrContent);
+      event.sender.send('esptool-error', stderrContent);
+  });
+
+  python.on('close', (code) => {
+    console.log(`child process close all stdio with code ${code}`);
+  });
+
+  python.on('exit', (code) => {
+    console.log('Process exited with code', code)
+    event.sender.send('esptool-error-code', code);
+  });
+})
+
+
+
+
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

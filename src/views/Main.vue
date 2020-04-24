@@ -33,24 +33,38 @@
         </div>
 
         <div class="firmware-input">
-          <b-form-file
+          <!-- <b-form-file
             size="sm"
             v-model="firmwareFile"
             :state="Boolean(firmwareFile)"
             placeholder="Select firmware file"
             drop-placeholder="Drop file here..."
-          ></b-form-file>
+            v-on:click.native.prevent="selectFirmwareFilePath"
+          ></b-form-file> -->
+          <b-input-group size="sm">
+            <b-input-group-prepend>
+              <b-button v-on:click="selectFirmwareFilePath" variant="info">Browse</b-button>
+            </b-input-group-prepend>
+            <b-form-input v-model="firmwareFile" placeholder="Select firmware file"></b-form-input>            
+          </b-input-group>
         </div>
 
         <div class="webpage-input">
-          <b-form-file
+          <!-- <b-form-file
             style="font-weight: 100!important;"
             size="sm"
             v-model="webpageFile"
             :state="Boolean(webpageFile)"
             placeholder="Select spiffs file"
             drop-placeholder="Drop file here..."
-          ></b-form-file>
+            v-on:click.native.prevent="selectWebpageFilePath"
+          ></b-form-file> -->
+          <b-input-group size="sm">
+            <b-input-group-prepend>
+              <b-button v-on:click="selectWebpageFilePath" variant="info">Browse</b-button>
+            </b-input-group-prepend>
+            <b-form-input v-model="webpageFile" placeholder="Select spiffs file"></b-form-input>            
+          </b-input-group>
         </div>
       </b-col>
 
@@ -87,8 +101,22 @@
               />
             </svg>
 
-            <svg v-if="showErrorMark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times-circle" class="error-icon svg-inline--fa fa-times-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"></path></svg>
-
+            <svg
+              v-if="showErrorMark"
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="times-circle"
+              class="error-icon svg-inline--fa fa-times-circle fa-w-16"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="currentColor"
+                d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"
+              />
+            </svg>
 
             <b-spinner
               v-if="showSpinner"
@@ -122,6 +150,7 @@
 // @ is an alias to /src
 //import HelloWorld from '@/components/HelloWorld.vue'
 const { ipcRenderer } = require("electron");
+//const { dialog } = require('electron').remote
 
 export default {
   name: "Main",
@@ -147,7 +176,9 @@ export default {
         { port: "COM4" },
         { port: "COM5" },
         { port: "COM6" },
-        { port: "COM7" }
+        { port: "COM7" },
+        { port: "/dev/ttyUSB0" },
+        { port: "/dev/ttyUSB1" }
       ],
       baudrateList: [{ value: 115200 }, { value: 921600 }],
       terminalData: "",
@@ -161,15 +192,25 @@ export default {
     // Async message handler
     var esptoolError = "";
     var esptoolOutput = "";
+    ipcRenderer.on("firmwareFilePath", (event, arg) => {
+      console.log("firmwareFilePath");
+      console.log(arg);
+      this.firmwareFile = arg;
+    });
+    ipcRenderer.on("webpageFilePath", (event, arg) => {
+      console.log("webpageFilePath");
+      console.log(arg);
+      this.webpageFile = arg;
+    });
     ipcRenderer.on("esptool-error", (event, arg) => {
-      console.log("esptool-error");      
+      console.log("esptool-error");
       console.log(arg);
       esptoolError = arg;
       //this.terminalData = "";
       //this.terminalData = arg;
     });
     ipcRenderer.on("esptool-output", (event, arg) => {
-      console.log("esptool-output"); 
+      console.log("esptool-output");
       console.log(arg);
       esptoolOutput = arg;
       //this.terminalData = "";
@@ -178,7 +219,7 @@ export default {
     ipcRenderer.on("esptool-error-code", (event, errorCode) => {
       console.log("esptool-error-code");
       console.log(errorCode);
-      switch(errorCode) {
+      switch (errorCode) {
         case 0: // got stdout no error
           this.showSpinner = false;
           this.showErrorMark = false;
@@ -201,7 +242,7 @@ export default {
           this.terminalData = esptoolError;
           break;
         default:
-          // code block
+        // code block
       }
     });
   },
@@ -220,24 +261,39 @@ export default {
     testConnection: function() {
       this.showCheckMark = false;
       this.showErrorMark = false;
-      this.showSpinner = true;      
+      this.showSpinner = true;
       //this.terminalData = this.terminalData + "\n" + "test";
 
       this.cmdLineArgs.baudrate = this.baudrateSpeed;
       this.cmdLineArgs.comPort = this.comPort;
 
-      
-
       // Async message sender
-      ipcRenderer.send("cmdLineArgs", this.cmdLineArgs);
+      ipcRenderer.send("test-esptool-connection", this.cmdLineArgs);
 
       //console.log(ipcRenderer.sendSync('cmdLineArgs', this.cmdLineArgs))
     },
-    flash: function() {},
+    flash: function() {
+      this.showCheckMark = false;
+      this.showErrorMark = false;
+      this.showSpinner = true;
+      //this.terminalData = this.terminalData + "\n" + "test";
+
+      this.cmdLineArgs.baudrate = this.baudrateSpeed;
+      this.cmdLineArgs.comPort = this.comPort;
+
+      // Async message sender
+      ipcRenderer.send("start-esptool-flash", this.cmdLineArgs);
+    },
+    selectFirmwareFilePath() {
+      console.log("get firmware file path...");
+      ipcRenderer.send("selectFirmwareFilePath");
+    },
+    selectWebpageFilePath() {
+      console.log("get webpage file path...");
+      ipcRenderer.send("selectWebpageFilePath");
+    }
   }
 };
-
-
 </script>
 
 <style>
