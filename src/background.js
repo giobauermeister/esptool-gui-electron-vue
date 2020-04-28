@@ -1,5 +1,6 @@
 'use strict'
 var path = require('path')
+var readline = require('readline');
 
 const {ipcMain} = require('electron')
 const { spawn } = require('child_process');
@@ -93,11 +94,11 @@ app.on('ready', async () => {
   createWindow()
 })
 
-var fimwareFilePath, webpageFilePath;
+var firmwareFilePath, webpageFilePath;
 ipcMain.on('selectFirmwareFilePath', (event, args) => {
   console.log(args);
   console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
-    fimwareFilePath = files[0];
+    firmwareFilePath = files[0];
     console.log(files[0]);
     event.sender.send('firmwareFilePath', files[0]);
   }));  
@@ -116,6 +117,27 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
   const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'read_mac']);
+
+  readline.createInterface({
+    input : python.stdout,
+    terminal : false
+    }).on('line', function(line) {
+      console.log("LOG READLINE stdout: ");      
+      console.log(line);
+      event.sender.send('line-esptool-output', line + '\n');
+    }).on('close', function() {
+      console.log("LOG READLINE stdout CLOSE");
+  });
+
+  readline.createInterface({
+    input : python.stderr,
+    terminal : false
+    }).on('line', function(line) {
+      console.log("LOG READLINE stderr: ");
+      console.log(line);
+    }).on('close', function() {
+      console.log("LOG READLINE stderr CLOSE");
+  });
   
   var stdoutChunks = [], stderrChunks = [];
   python.stdout.on('data', (data) => {
@@ -123,8 +145,8 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
   });
   python.stdout.on('end', () => {
       var stdoutContent = Buffer.concat(stdoutChunks).toString();
-      console.log('stdout chars:', stdoutContent.length);
-      console.log(stdoutContent);
+      //console.log('stdout chars:', stdoutContent.length);
+      //console.log(stdoutContent);
       if(stdoutContent.length > 0) event.sender.send('esptool-output', stdoutContent);
   });
   
@@ -133,8 +155,8 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
   });
   python.stderr.on('end', () => {
       var stderrContent = Buffer.concat(stderrChunks).toString();
-      console.log('stderr chars:', stderrContent.length);
-      console.log(stderrContent);
+      //console.log('stderr chars:', stderrContent.length);
+      //console.log(stderrContent);
       event.sender.send('esptool-error', stderrContent);
   });
 
@@ -152,22 +174,47 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
 ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
-  console.log("Firmware file: " + fimwareFilePath);
-  console.log("Webpage file: " + webpageFilePath);
+  console.log("Firmware file: " + cmdLineArgs.firmwareFilePath);
+  console.log("Webpage file: " + cmdLineArgs.webpageFilePath);
   const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, 
                                       '-p', cmdLineArgs.comPort, 
                                       'write_flash', 
-                                      '0x10000', fimwareFilePath,
-                                      '0x290000', webpageFilePath]);
+                                      '0x10000', cmdLineArgs.firmwareFilePath,
+                                      '0x290000', cmdLineArgs.webpageFilePath]);
+    
   
+  var progressCounter = 0;
+  readline.createInterface({
+    input : python.stdout,
+    terminal : false
+    }).on('line', function(line) {
+      console.log("LOG READLINE stdout: ");      
+      console.log(line);
+      event.sender.send('line-esptool-output', line + '\n');
+      event.sender.send('progress-bar', progressCounter++);
+    }).on('close', function() {
+      console.log("LOG READLINE stdout CLOSE");
+  });
+
+  readline.createInterface({
+    input : python.stderr,
+    terminal : false
+    }).on('line', function(line) {
+      console.log("LOG READLINE stderr: ");
+      console.log(line);
+      event.sender.send('line-esptool-error', line + '\n');
+    }).on('close', function() {
+      console.log("LOG READLINE stderr CLOSE");
+  });  
+
   var stdoutChunks = [], stderrChunks = [];
   python.stdout.on('data', (data) => {
     stdoutChunks = stdoutChunks.concat(data);
   });
   python.stdout.on('end', () => {
       var stdoutContent = Buffer.concat(stdoutChunks).toString();
-      console.log('stdout chars:', stdoutContent.length);
-      console.log(stdoutContent);
+      //console.log('stdout chars:', stdoutContent.length);
+      //console.log(stdoutContent);
       if(stdoutContent.length > 0) event.sender.send('esptool-output', stdoutContent);
   });
   
@@ -176,8 +223,8 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
   });
   python.stderr.on('end', () => {
       var stderrContent = Buffer.concat(stderrChunks).toString();
-      console.log('stderr chars:', stderrContent.length);
-      console.log(stderrContent);
+      //console.log('stderr chars:', stderrContent.length);
+      //console.log(stderrContent);
       event.sender.send('esptool-error', stderrContent);
   });
 

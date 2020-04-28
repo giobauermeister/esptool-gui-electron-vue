@@ -134,14 +134,13 @@
         :value="flashProgressValue"
         variant="info"
         striped
-        show-progress
         :animated="animate"
         class="mt-2"
       ></b-progress>
     </div>
 
     <div class="terminal-container">
-      <textarea class="terminal terminal-data" v-model="terminalData"></textarea>
+      <textarea id="textarea" class="terminal terminal-data" v-model="terminalData"></textarea>
     </div>
   </div>
 </template>
@@ -163,7 +162,7 @@ export default {
       webpageFile: null,
       comPort: "",
       baudrateSpeed: "",
-      flashProgressValue: 75,
+      flashProgressValue: 0,
       selected: null,
       showSpinner: false,
       showCheckMark: false,
@@ -184,14 +183,19 @@ export default {
       terminalData: "",
       cmdLineArgs: {
         baudrate: this.baudrate,
-        comPort: this.comPort
+        comPort: this.comPort,
+        firmwareFilePath: this.firmwareFile,
+        webpageFilePath: this.webpageFile
       }
     };
   },
   mounted() {
     // Async message handler
-    var esptoolError = "";
-    var esptoolOutput = "";
+    //var esptoolError = "";
+    //var esptoolOutput = "";
+    function mapValue(x, in_min, in_max, out_min, out_max) {
+      return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
     ipcRenderer.on("firmwareFilePath", (event, arg) => {
       console.log("firmwareFilePath");
       console.log(arg);
@@ -205,17 +209,39 @@ export default {
     ipcRenderer.on("esptool-error", (event, arg) => {
       console.log("esptool-error");
       console.log(arg);
-      esptoolError = arg;
+      //esptoolError = arg;
       //this.terminalData = "";
       //this.terminalData = arg;
     });
     ipcRenderer.on("esptool-output", (event, arg) => {
       console.log("esptool-output");
       console.log(arg);
-      esptoolOutput = arg;
+      //esptoolOutput = arg;
       //this.terminalData = "";
       //this.terminalData = arg;
     });
+    ipcRenderer.on("line-esptool-output", (event, arg) => {
+      console.log("line-esptool-output");
+      console.log(arg);
+      //esptoolOutput = arg;
+      //this.terminalData = "";
+      this.terminalData = this.terminalData + arg;
+      var divContainer = this.$el.querySelector("#textarea");
+      divContainer.scrollTop = divContainer.scrollHeight;
+    });
+    ipcRenderer.on("line-esptool-error", (event, arg) => {
+      console.log("line-esptool-error");
+      console.log(arg);
+      //esptoolOutput = arg;
+      //this.terminalData = "";
+      this.terminalData = this.terminalData + arg;
+      var divContainer = this.$el.querySelector("#textarea");
+      divContainer.scrollTop = divContainer.scrollHeight;
+    });
+    ipcRenderer.on("progress-bar", (event, arg) => {      
+      this.flashProgressValue = mapValue(arg, 0, 36, 0, 100);
+    });
+
     ipcRenderer.on("esptool-error-code", (event, errorCode) => {
       console.log("esptool-error-code");
       console.log(errorCode);
@@ -224,22 +250,22 @@ export default {
           this.showSpinner = false;
           this.showErrorMark = false;
           this.showCheckMark = true;
-          this.terminalData = "";
-          this.terminalData = esptoolOutput;
+          //this.terminalData = "";
+          //this.terminalData = esptoolOutput;
           break;
         case 1: // got stderr
           this.showSpinner = false;
           this.showCheckMark = false;
           this.showErrorMark = true;
-          this.terminalData = "";
-          this.terminalData = esptoolError;
+          //this.terminalData = "";
+          //this.terminalData = esptoolError;
           break;
         case 2:
           this.showSpinner = false;
           this.showCheckMark = false;
           this.showErrorMark = true;
-          this.terminalData = "";
-          this.terminalData = esptoolError;
+          //this.terminalData = "";
+          //this.terminalData = esptoolError;
           break;
         default:
         // code block
@@ -259,9 +285,11 @@ export default {
       this.cmdLineArgs.comPort = comPort;
     },
     testConnection: function() {
+      this.flashProgressValue = 0;
       this.showCheckMark = false;
       this.showErrorMark = false;
       this.showSpinner = true;
+      this.terminalData = "";
       //this.terminalData = this.terminalData + "\n" + "test";
 
       this.cmdLineArgs.baudrate = this.baudrateSpeed;
@@ -273,13 +301,17 @@ export default {
       //console.log(ipcRenderer.sendSync('cmdLineArgs', this.cmdLineArgs))
     },
     flash: function() {
+      this.flashProgressValue = 0;
       this.showCheckMark = false;
       this.showErrorMark = false;
       this.showSpinner = true;
+      this.terminalData = "";
       //this.terminalData = this.terminalData + "\n" + "test";
 
       this.cmdLineArgs.baudrate = this.baudrateSpeed;
       this.cmdLineArgs.comPort = this.comPort;
+      this.cmdLineArgs.firmwareFilePath = this.firmwareFile;
+      this.cmdLineArgs.webpageFilePath = this.webpageFile;
 
       // Async message sender
       ipcRenderer.send("start-esptool-flash", this.cmdLineArgs);
