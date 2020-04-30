@@ -1,71 +1,96 @@
 <template>
   <div class="home">
     <b-row>
-      <b-col cols="8">
-        <div class="com-input">
-          <b-input-group size="sm">
-            <b-form-input v-model="comPort" placeholder></b-form-input>
-            <template v-slot:prepend>
-              <b-dropdown size="sm" text="Select COM port" variant="info">
-                <b-dropdown-item
-                  v-on:click="setComPort(item.port)"
-                  v-bind:key="item.port"
-                  v-for="item in comPortsList"
-                >{{ item.port }}</b-dropdown-item>
-              </b-dropdown>
-            </template>
-          </b-input-group>
-        </div>
+      <b-col cols="7">
+        <b-row no-gutters>
+          <b-col>
+            <div class="firmware-input">
+              <b-input-group size="sm">
+                <b-input-group-prepend>
+                  <b-button v-on:click="selectFirmwareFilePath" variant="info">Browse</b-button>
+                </b-input-group-prepend>
+                <b-form-input
+                  v-model="firmwareFile"
+                  placeholder="Select firmware file"
+                  :state="firmwareFileInputState"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </b-col>
+          <b-col cols="3">
+            <div class="firmware-input-address">
+              <b-form-input
+                size="sm"
+                placeholder="address"
+                v-model="firmwareAddress"
+                v-on:input="firmwareAddressInputState = null; firmwareFileInputState = null"
+                :state="firmwareAddressInputState"
+              ></b-form-input>
+            </div>
+          </b-col>
+        </b-row>
 
-        <div class="baud-input">
-          <b-input-group size="sm">
-            <b-form-input v-model="baudrateSpeed" id="baudrate-input" placeholder></b-form-input>
-            <template v-slot:prepend>
-              <b-dropdown size="sm" text="Select baudrate" variant="info">
-                <b-dropdown-item
-                  v-on:click="setBaudrate(baudrate.value)"
-                  v-bind:key="baudrate.value"
-                  v-for="baudrate in baudrateList"
-                >{{ baudrate.value }}</b-dropdown-item>
-              </b-dropdown>
-            </template>
-          </b-input-group>
-        </div>
+        <b-row no-gutters>
+          <b-col>
+            <div class="webpage-input">
+              <b-input-group size="sm">
+                <b-input-group-prepend>
+                  <b-button v-on:click="selectWebpageFilePath" variant="info">Browse</b-button>
+                </b-input-group-prepend>
+                <b-form-input
+                  v-model="webpageFile"
+                  placeholder="Select spiffs file"
+                  :state="webpageFileInputState"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </b-col>
+          <b-col cols="3">
+            <div class="webpage-input-address">
+              <b-form-input
+                size="sm"
+                placeholder="address"
+                v-model="webpageAddress"
+                v-on:input="webpageAddressInputState = null; webpageFileInputState = null"
+                :state="webpageAddressInputState"
+              ></b-form-input>
+            </div>
+          </b-col>
+        </b-row>
 
-        <div class="firmware-input">
-          <!-- <b-form-file
-            size="sm"
-            v-model="firmwareFile"
-            :state="Boolean(firmwareFile)"
-            placeholder="Select firmware file"
-            drop-placeholder="Drop file here..."
-            v-on:click.native.prevent="selectFirmwareFilePath"
-          ></b-form-file> -->
-          <b-input-group size="sm">
-            <b-input-group-prepend>
-              <b-button v-on:click="selectFirmwareFilePath" variant="info">Browse</b-button>
-            </b-input-group-prepend>
-            <b-form-input v-model="firmwareFile" placeholder="Select firmware file"></b-form-input>            
-          </b-input-group>
-        </div>
+        <b-row no-gutters>
+          <b-col cols="7">
+            <div class="com-input">
+              <b-input-group size="sm">
+                <b-form-input v-model="comPort" :state="comPortInputState" placeholder></b-form-input>
+                <template v-slot:prepend>
+                  <b-dropdown size="sm" text="Select COM port" variant="info">
+                    <b-dropdown-item
+                      v-on:click="setComPort(item.port)"
+                      v-bind:key="item.port"
+                      v-for="item in comPortsList"
+                    >{{ item.port }}</b-dropdown-item>
+                  </b-dropdown>
+                </template>
+              </b-input-group>
+            </div>
 
-        <div class="webpage-input">
-          <!-- <b-form-file
-            style="font-weight: 100!important;"
-            size="sm"
-            v-model="webpageFile"
-            :state="Boolean(webpageFile)"
-            placeholder="Select spiffs file"
-            drop-placeholder="Drop file here..."
-            v-on:click.native.prevent="selectWebpageFilePath"
-          ></b-form-file> -->
-          <b-input-group size="sm">
-            <b-input-group-prepend>
-              <b-button v-on:click="selectWebpageFilePath" variant="info">Browse</b-button>
-            </b-input-group-prepend>
-            <b-form-input v-model="webpageFile" placeholder="Select spiffs file"></b-form-input>            
-          </b-input-group>
-        </div>
+            <div class="baud-input">
+              <b-input-group size="sm">
+                <b-form-input v-model="baudrateSpeed" :state="baudrateInputState" placeholder></b-form-input>
+                <template v-slot:prepend>
+                  <b-dropdown size="sm" text="Select baudrate" variant="info">
+                    <b-dropdown-item
+                      v-on:click="setBaudrate(baudrate.value)"
+                      v-bind:key="baudrate.value"
+                      v-for="baudrate in baudrateList"
+                    >{{ baudrate.value }}</b-dropdown-item>
+                  </b-dropdown>
+                </template>
+              </b-input-group>
+            </div>
+          </b-col>
+        </b-row>
       </b-col>
 
       <b-col>
@@ -82,6 +107,29 @@
           <b-button v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
         </div>
 
+        <div class="btn-advanced">
+          <b-button
+            v-on:click="showAdvanced"
+            style="width: 120px;"
+            size="sm"
+            variant="dark"
+          >Advanced</b-button>
+        </div>
+      </b-col>
+    </b-row>
+
+    <div class="flash-progress">
+      <b-progress
+        :value="flashProgressValue"
+        variant="info"
+        striped
+        :animated="animate"
+        class="mt-2"
+      ></b-progress>
+    </div>
+
+    <div class="terminal-container">
+      <div class="overlay">
         <div class="spinner-container">
           <div class="check-icon-container">
             <svg
@@ -120,27 +168,15 @@
 
             <b-spinner
               v-if="showSpinner"
-              style="width: 4rem; height: 4rem; "
+              style="width: 3rem; height: 3rem; "
               variant="info"
               type="grow"
             ></b-spinner>
           </div>
         </div>
-      </b-col>
-    </b-row>
+      </div>
 
-    <div class="flash-progress">
-      <b-progress
-        :value="flashProgressValue"
-        variant="info"
-        striped
-        :animated="animate"
-        class="mt-2"
-      ></b-progress>
-    </div>
-
-    <div class="terminal-container">
-      <textarea id="textarea" class="terminal terminal-data" v-model="terminalData"></textarea>
+      <textarea readonly id="textarea" class="terminal terminal-data" v-model="terminalData"></textarea>
     </div>
   </div>
 </template>
@@ -156,12 +192,21 @@ export default {
   components: {
     //HelloWorld
   },
+  computed: {},
   data() {
     return {
-      firmwareFile: null,
-      webpageFile: null,
+      firmwareFile: "",
+      webpageFile: "",
       comPort: "",
       baudrateSpeed: "",
+      firmwareAddress: "",
+      webpageAddress: "",
+      comPortInputState: null,
+      baudrateInputState: null,
+      firmwareFileInputState: null,
+      webpageFileInputState: null,
+      firmwareAddressInputState: null,
+      webpageAddressInputState: null,
       flashProgressValue: 0,
       selected: null,
       showSpinner: false,
@@ -185,7 +230,9 @@ export default {
         baudrate: this.baudrate,
         comPort: this.comPort,
         firmwareFilePath: this.firmwareFile,
-        webpageFilePath: this.webpageFile
+        firmwareAddress: this.firmwareAddress,
+        webpageFilePath: this.webpageFile,
+        webpageAddress: this.webpageAddress
       }
     };
   },
@@ -194,7 +241,7 @@ export default {
     //var esptoolError = "";
     //var esptoolOutput = "";
     function mapValue(x, in_min, in_max, out_min, out_max) {
-      return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+      return ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
     }
     ipcRenderer.on("firmwareFilePath", (event, arg) => {
       console.log("firmwareFilePath");
@@ -238,7 +285,7 @@ export default {
       var divContainer = this.$el.querySelector("#textarea");
       divContainer.scrollTop = divContainer.scrollHeight;
     });
-    ipcRenderer.on("progress-bar", (event, arg) => {      
+    ipcRenderer.on("progress-bar", (event, arg) => {
       this.flashProgressValue = mapValue(arg, 0, 36, 0, 100);
     });
 
@@ -277,73 +324,110 @@ export default {
       console.log(baudrate);
       this.baudrateSpeed = baudrate;
       this.cmdLineArgs.baudrate = baudrate;
-      //ipcRenderer.send('asynchronous-message', 'hello world');
+      this.baudrateInputState = null;
     },
     setComPort: function(comPort) {
       console.log(comPort);
       this.comPort = comPort;
       this.cmdLineArgs.comPort = comPort;
+      this.comPortInputState = null;
     },
     testConnection: function() {
-      this.flashProgressValue = 0;
-      this.showCheckMark = false;
-      this.showErrorMark = false;
-      this.showSpinner = true;
-      this.terminalData = "";
-      //this.terminalData = this.terminalData + "\n" + "test";
+      if (this.comPort == "" || this.baudrateSpeed == "") {
+        this.makeToast("danger", "Select COM port and Baudrate");
+        this.comPortInputState = false;
+        this.baudrateInputState = false;
+      } else {
+        this.flashProgressValue = 0;
+        this.showCheckMark = false;
+        this.showErrorMark = false;
+        this.showSpinner = true;
+        this.terminalData = "";
 
-      this.cmdLineArgs.baudrate = this.baudrateSpeed;
-      this.cmdLineArgs.comPort = this.comPort;
+        this.cmdLineArgs.baudrate = this.baudrateSpeed;
+        this.cmdLineArgs.comPort = this.comPort;
 
-      // Async message sender
-      ipcRenderer.send("test-esptool-connection", this.cmdLineArgs);
-
-      //console.log(ipcRenderer.sendSync('cmdLineArgs', this.cmdLineArgs))
+        // Async message sender
+        ipcRenderer.send("test-esptool-connection", this.cmdLineArgs);
+      }
     },
     flash: function() {
-      this.flashProgressValue = 0;
-      this.showCheckMark = false;
-      this.showErrorMark = false;
-      this.showSpinner = true;
-      this.terminalData = "";
-      //this.terminalData = this.terminalData + "\n" + "test";
+      if (this.comPort == "" || this.baudrateSpeed == "") {
+        this.makeToast("danger", "Select COM port and Baudrate");
+        this.comPortInputState = false;
+        this.baudrateInputState = false;
+      } else if (this.firmwareFile == "" || this.firmwareAddress == "") {
+        this.makeToast("danger", "Select at least firmware file and address");
+        this.firmwareFileInputState = false;
+        //this.webpageFileInputState = false;
+        this.firmwareAddressInputState = false;
+        //this.webpageAddressInputState = false;
+      } else {
+        this.flashProgressValue = 0;
+        this.showCheckMark = false;
+        this.showErrorMark = false;
+        this.showSpinner = true;
+        this.terminalData = "";
 
-      this.cmdLineArgs.baudrate = this.baudrateSpeed;
-      this.cmdLineArgs.comPort = this.comPort;
-      this.cmdLineArgs.firmwareFilePath = this.firmwareFile;
-      this.cmdLineArgs.webpageFilePath = this.webpageFile;
+        this.cmdLineArgs.baudrate = this.baudrateSpeed;
+        this.cmdLineArgs.comPort = this.comPort;
+        this.cmdLineArgs.firmwareFilePath = this.firmwareFile;
+        this.cmdLineArgs.webpageFilePath = this.webpageFile;
+        this.cmdLineArgs.firmwareAddress = this.firmwareAddress;
+        this.cmdLineArgs.webpageAddress = this.webpageAddress;
 
-      // Async message sender
-      ipcRenderer.send("start-esptool-flash", this.cmdLineArgs);
+        // Async message sender
+        ipcRenderer.send("start-esptool-flash", this.cmdLineArgs);
+      }
     },
     selectFirmwareFilePath() {
       console.log("get firmware file path...");
       ipcRenderer.send("selectFirmwareFilePath");
+      this.firmwareFileInputState = null;
+      this.firmwareAddressInputState = null;
     },
     selectWebpageFilePath() {
       console.log("get webpage file path...");
       ipcRenderer.send("selectWebpageFilePath");
+      //this.webpageFileInputState = null;
+      //this.webpageAddressInputState = null;
+    },
+    makeToast(variant = null, message) {
+      this.$bvToast.toast(message, {
+        title: "Error",
+        variant: variant,
+        solid: true,
+        autoHideDelay: 3000
+      });
     }
   }
 };
 </script>
 
 <style>
-.com-input {
-  width: 100%;
-  padding: 10px 0px 10px 10px;
-}
-.baud-input {
-  width: 100%;
-  padding: 5px 0px 10px 10px;
-}
 .firmware-input {
   width: 100%;
-  padding: 5px 0px 10px 10px;
+  padding: 5px 0px 2px 10px;
+}
+.firmware-input-address {
+  width: 100%;
+  padding: 5px 0px 2px 10px;
 }
 .webpage-input {
   width: 100%;
-  padding: 5px 0px 10px 10px;
+  padding: 5px 0px 5px 10px;
+}
+.webpage-input-address {
+  width: 100%;
+  padding: 5px 0px 5px 10px;
+}
+.com-input {
+  width: 100%;
+  padding: 2px 0px 2px 10px;
+}
+.baud-input {
+  width: 100%;
+  padding: 5px 0px 30px 10px;
 }
 .btn-test-connection {
   width: 100%;
@@ -355,18 +439,32 @@ export default {
   padding: 5px 10px 10px 10px;
   text-align: left;
 }
+.btn-advanced {
+  width: 100%;
+  padding: 5px 10px 5px 10px;
+  text-align: left;
+}
 .spinner-container {
-  width: 120px;
+  /* width: 120px; */
+  position: relative;
+  top: 10px;
+  left: 720px;
+  width: 100%;
   /* background-color: lemonchiffon; */
-  height: 80px;
+  height: 50px;
   display: flex;
   align-items: center;
-  padding: 0px 0px 0px 15px;
+  padding: 0px 0px 0px 0px;
+  /* position: right; */
   /* margin: 0 auto; */
 }
+.overlay {
+  position: fixed;
+  z-index: 2;
+}
 .check-icon-container {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   margin: auto;
   display: block;
   /* vertical-align: auto; */
@@ -391,6 +489,8 @@ export default {
   height: 220px;
   border-radius: 8px;
   text-align: start;
+  resize: none;
+  outline: none;
 }
 .terminal-data {
   color: aliceblue;

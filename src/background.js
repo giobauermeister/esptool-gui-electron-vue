@@ -25,7 +25,7 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ 
-    width: 600, 
+    width: 800, 
     height: 450,
     icon: path.join(__dirname, 'build/flash.png'),
     resizable: true,
@@ -135,6 +135,7 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
     }).on('line', function(line) {
       console.log("LOG READLINE stderr: ");
       console.log(line);
+      event.sender.send('line-esptool-output', line + '\n');
     }).on('close', function() {
       console.log("LOG READLINE stderr CLOSE");
   });
@@ -172,15 +173,19 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
 
 // Event handler for asynchronous incoming messages
 ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
+  console.log('\n\n');
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
   console.log("Firmware file: " + cmdLineArgs.firmwareFilePath);
   console.log("Webpage file: " + cmdLineArgs.webpageFilePath);
+  console.log("Firmware address: " + cmdLineArgs.firmwareAddress);
+  console.log("Webpage address: " + cmdLineArgs.webpageAddress);
+  console.log('\n\n');  
   const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, 
                                       '-p', cmdLineArgs.comPort, 
                                       'write_flash', 
-                                      '0x10000', cmdLineArgs.firmwareFilePath,
-                                      '0x290000', cmdLineArgs.webpageFilePath]);
+                                      cmdLineArgs.firmwareAddress, cmdLineArgs.firmwareFilePath,
+                                      cmdLineArgs.webpageAddress, cmdLineArgs.webpageFilePath]);
     
   
   var progressCounter = 0;
