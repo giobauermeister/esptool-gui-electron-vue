@@ -1,28 +1,32 @@
 # esptool-vue-electron-gui
 
-## Project setup
+## System requirements
+- Python installed
+- [esptool.py](https://github.com/espressif/esptool)
+- esptool.py configured in PATH
+
+## Instructions for v0.1.0-beta
+You should have two binaries in hand for flashing. This version demands both firmware and spiffs file to be in place as well as their memory address.
+
+## ToDo
+- add more fields for more than two binary files (partitions.bin, etc)
+- enable Advanced button for advanced configurations like flash mode, size, frequency and other options from [here](https://github.com/espressif/esptool/wiki/Advanced-Options). 
+
+
+## Electron Project setup
 ```
 npm install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+npm run electron:serve
 ```
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
+### Reference
 ### Electron inter process communication tutorial
 https://www.tutorialspoint.com/electron/electron_inter_process_communication.htm
 ### run Python from nodejs
