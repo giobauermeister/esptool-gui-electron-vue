@@ -10,7 +10,7 @@
                 "icon": "build/flash.ico"
             },
             "portable": {
-                "artifactName": "esp32_flasher_esptool.exe"
+                "artifactName": "esp32_flasher_esptool_${version}.exe"
             },
             // "directories": {
             //     "output": "electron/output",
