@@ -1,5 +1,7 @@
 # esptool-vue-electron-gui
 
+![app screenshot](https://raw.githubusercontent.com/giobauermeister/esptool-vue-electron-gui/master/build/esptoolgui.png)
+
 ## System requirements
 - Python installed
 - [esptool.py](https://github.com/espressif/esptool)
