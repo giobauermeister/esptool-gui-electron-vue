@@ -1,70 +1,138 @@
 <template>
   <div class="home">
     <b-row>
-      <b-col cols="7">
+      <b-col cols="8">
+        <!-- 1 Binary and address -->
         <b-row no-gutters>
           <b-col>
-            <div class="firmware-input">
+            <div class="binary-input">
               <b-input-group size="sm">
                 <b-input-group-prepend>
-                  <b-button v-on:click="selectFirmwareFilePath" variant="info">Browse</b-button>
+                  <b-button class="btn-xs" v-on:click="selectBinaryPath_1" variant="info">Browse</b-button>
                 </b-input-group-prepend>
                 <b-form-input
-                  v-model="firmwareFile"
+                  class="input-xs"
+                  v-model="binaryFile_1"
                   placeholder="Select firmware file"
-                  :state="firmwareFileInputState"
+                  :state="binaryInputState_1"
                 ></b-form-input>
               </b-input-group>
             </div>
           </b-col>
           <b-col cols="3">
-            <div class="firmware-input-address">
+            <div class="address-input">
               <b-form-input
-                size="sm"
+                class="input-xs"
+                size="sm"                
                 placeholder="address"
-                v-model="firmwareAddress"
-                v-on:input="firmwareAddressInputState = null; firmwareFileInputState = null"
-                :state="firmwareAddressInputState"
+                v-model="binaryAddress_1"
+                v-on:input="addressInputState_1 = null; binaryInputState_1 = null"
+                :state="addressInputState_1"
               ></b-form-input>
             </div>
           </b-col>
         </b-row>
 
+        <!-- 2 Binary and address -->
         <b-row no-gutters>
           <b-col>
-            <div class="webpage-input">
+            <div class="binary-input">
               <b-input-group size="sm">
                 <b-input-group-prepend>
-                  <b-button v-on:click="selectWebpageFilePath" variant="info">Browse</b-button>
+                  <b-button class="btn-xs" v-on:click="selectBinaryPath_2" variant="info">Browse</b-button>
                 </b-input-group-prepend>
                 <b-form-input
-                  v-model="webpageFile"
+                  class="input-xs"
+                  v-model="binaryFile_2"
                   placeholder="Select spiffs file"
-                  :state="webpageFileInputState"
+                  :state="binaryInputState_2"
                 ></b-form-input>
               </b-input-group>
             </div>
           </b-col>
           <b-col cols="3">
-            <div class="webpage-input-address">
+            <div class="address-input">
               <b-form-input
-                size="sm"
+                class="input-xs"
+                size="sm" 
                 placeholder="address"
-                v-model="webpageAddress"
-                v-on:input="webpageAddressInputState = null; webpageFileInputState = null"
-                :state="webpageAddressInputState"
+                v-model="binaryAddress_2"
+                v-on:input="addressInputState_2 = null; binaryInputState_2 = null"
+                :state="addressInputState_2"
+              ></b-form-input>
+            </div>
+          </b-col>
+        </b-row>
+
+        <!-- 3 Binary and address -->
+        <b-row no-gutters>
+          <b-col>
+            <div class="binary-input">
+              <b-input-group size="sm">
+                <b-input-group-prepend>
+                  <b-button class="btn-xs" v-on:click="selectBinaryPath_3" variant="info">Browse</b-button>
+                </b-input-group-prepend>
+                <b-form-input
+                  class="input-xs"
+                  v-model="binaryFile_3"
+                  placeholder="Select third binary file"
+                  :state="binaryInputState_3"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </b-col>
+          <b-col cols="3">
+            <div class="address-input">
+              <b-form-input
+                class="input-xs"
+                size="sm" 
+                placeholder="address"
+                v-model="binaryAddress_3"
+                v-on:input="addressInputState_3 = null; binaryInputState_3 = null"
+                :state="addressInputState_3"
+              ></b-form-input>
+            </div>
+          </b-col>
+        </b-row>
+
+        <!-- 4 Binary and address -->
+        <b-row no-gutters>
+          <b-col>
+            <div class="binary-input">
+              <b-input-group size="sm">
+                <b-input-group-prepend>
+                  <b-button class="btn-xs" v-on:click="selectBinaryPath_4" variant="info">Browse</b-button>
+                </b-input-group-prepend>
+                <b-form-input
+                  class="input-xs"
+                  v-model="binaryFile_4"
+                  placeholder="Select fourth binary file"
+                  :state="binaryInputState_4"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </b-col>
+          <b-col cols="3">
+            <div class="address-input">
+              <b-form-input
+                class="input-xs"
+                size="sm" 
+                placeholder="address"
+                v-model="binaryAddress_4"
+                v-on:input="addressInputState_4 = null; binaryInputState_4 = null"
+                :state="addressInputState_4"
               ></b-form-input>
             </div>
           </b-col>
         </b-row>
 
         <b-row no-gutters>
-          <b-col cols="7">
+          <b-col cols="5">
             <div class="com-input">
               <b-input-group size="sm">
-                <b-form-input v-model="comPort" :state="comPortInputState" placeholder></b-form-input>
+                <b-form-input class="input-xs" v-model="comPort" :state="comPortInputState" placeholder></b-form-input>
                 <template v-slot:prepend>
-                  <b-dropdown size="sm" text="Select COM port" variant="info">
+                  <b-dropdown class="dropdown-xs" size="sm" text="COM port" variant="info">
                     <b-dropdown-item
                       v-on:click="setComPort(item.port)"
                       v-bind:key="item.port"
@@ -77,9 +145,9 @@
 
             <div class="baud-input">
               <b-input-group size="sm">
-                <b-form-input v-model="baudrateSpeed" :state="baudrateInputState" placeholder></b-form-input>
+                <b-form-input class="input-xs" v-model="baudrateSpeed" :state="baudrateInputState" placeholder></b-form-input>
                 <template v-slot:prepend>
-                  <b-dropdown size="sm" text="Select baudrate" variant="info">
+                  <b-dropdown class="dropdown-xs" size="sm" text="Baudrate " variant="info">
                     <b-dropdown-item
                       v-on:click="setBaudrate(baudrate.value)"
                       v-bind:key="baudrate.value"
@@ -95,7 +163,8 @@
 
       <b-col>
         <div class="btn-test-connection">
-          <b-button
+          <b-button 
+            class="btn-xs"
             v-on:click="testConnection"
             style="width: 120px;"
             size="sm"
@@ -104,15 +173,17 @@
         </div>
 
         <div class="btn-flash">
-          <b-button v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
+          <b-button class="btn-xs" v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
         </div>
 
         <div class="btn-advanced">
-          <b-button
+          <b-button 
+            class="btn-xs"
             v-on:click="showAdvanced"
             style="width: 120px;"
             size="sm"
             variant="dark"
+            disabled="true"
           >Advanced</b-button>
         </div>
       </b-col>
@@ -195,18 +266,18 @@ export default {
   computed: {},
   data() {
     return {
-      firmwareFile: "",
-      webpageFile: "",
+      binaryFile_1: "",
+      binaryFile_2: "",
       comPort: "",
       baudrateSpeed: "",
-      firmwareAddress: "",
-      webpageAddress: "",
+      binaryAddress_1: "",
+      binaryAddress_2: "",
       comPortInputState: null,
       baudrateInputState: null,
-      firmwareFileInputState: null,
-      webpageFileInputState: null,
-      firmwareAddressInputState: null,
-      webpageAddressInputState: null,
+      binaryInputState_1: null,
+      binaryInputState_2: null,
+      addressInputState_1: null,
+      addressInputState_2: null,
       flashProgressValue: 0,
       selected: null,
       showSpinner: false,
@@ -229,10 +300,10 @@ export default {
       cmdLineArgs: {
         baudrate: this.baudrate,
         comPort: this.comPort,
-        firmwareFilePath: this.firmwareFile,
-        firmwareAddress: this.firmwareAddress,
-        webpageFilePath: this.webpageFile,
-        webpageAddress: this.webpageAddress
+        firmwareFilePath: this.binaryFile_1,
+        binaryAddress_1: this.binaryAddress_1,
+        webpageFilePath: this.binaryFile_2,
+        binaryAddress_2: this.binaryAddress_2
       }
     };
   },
@@ -246,12 +317,12 @@ export default {
     ipcRenderer.on("firmwareFilePath", (event, arg) => {
       console.log("firmwareFilePath");
       console.log(arg);
-      this.firmwareFile = arg;
+      this.binaryFile_1 = arg;
     });
     ipcRenderer.on("webpageFilePath", (event, arg) => {
       console.log("webpageFilePath");
       console.log(arg);
-      this.webpageFile = arg;
+      this.binaryFile_2 = arg;
     });
     ipcRenderer.on("esptool-error", (event, arg) => {
       console.log("esptool-error");
@@ -356,12 +427,12 @@ export default {
         this.makeToast("danger", "Select COM port and Baudrate");
         this.comPortInputState = false;
         this.baudrateInputState = false;
-      } else if (this.firmwareFile == "" || this.firmwareAddress == "") {
+      } else if (this.binaryFile_1 == "" || this.binaryAddress_1 == "") {
         this.makeToast("danger", "Select at least firmware file and address");
-        this.firmwareFileInputState = false;
-        //this.webpageFileInputState = false;
-        this.firmwareAddressInputState = false;
-        //this.webpageAddressInputState = false;
+        this.binaryInputState_1 = false;
+        //this.binaryInputState_2 = false;
+        this.addressInputState_1 = false;
+        //this.addressInputState_2 = false;
       } else {
         this.flashProgressValue = 0;
         this.showCheckMark = false;
@@ -371,26 +442,26 @@ export default {
 
         this.cmdLineArgs.baudrate = this.baudrateSpeed;
         this.cmdLineArgs.comPort = this.comPort;
-        this.cmdLineArgs.firmwareFilePath = this.firmwareFile;
-        this.cmdLineArgs.webpageFilePath = this.webpageFile;
-        this.cmdLineArgs.firmwareAddress = this.firmwareAddress;
-        this.cmdLineArgs.webpageAddress = this.webpageAddress;
+        this.cmdLineArgs.firmwareFilePath = this.binaryFile_1;
+        this.cmdLineArgs.webpageFilePath = this.binaryFile_2;
+        this.cmdLineArgs.binaryAddress_1 = this.binaryAddress_1;
+        this.cmdLineArgs.binaryAddress_2 = this.binaryAddress_2;
 
         // Async message sender
         ipcRenderer.send("start-esptool-flash", this.cmdLineArgs);
       }
     },
-    selectFirmwareFilePath() {
+    selectBinaryPath_1() {
       console.log("get firmware file path...");
-      ipcRenderer.send("selectFirmwareFilePath");
-      this.firmwareFileInputState = null;
-      this.firmwareAddressInputState = null;
+      ipcRenderer.send("selectBinaryPath_1");
+      this.binaryInputState_1 = null;
+      this.addressInputState_1 = null;
     },
-    selectWebpageFilePath() {
+    selectBinaryPath_2() {
       console.log("get webpage file path...");
-      ipcRenderer.send("selectWebpageFilePath");
-      //this.webpageFileInputState = null;
-      //this.webpageAddressInputState = null;
+      ipcRenderer.send("selectBinaryPath_2");
+      //this.binaryInputState_2 = null;
+      //this.addressInputState_2 = null;
     },
     makeToast(variant = null, message) {
       this.$bvToast.toast(message, {
@@ -405,43 +476,52 @@ export default {
 </script>
 
 <style>
-.firmware-input {
-  width: 100%;
-  padding: 5px 0px 2px 10px;
+.input-xs {
+  height: 25px!important;
 }
-.firmware-input-address {
-  width: 100%;
-  padding: 5px 0px 2px 10px;
+.btn-xs {
+  text-align: center!important; 
+  line-height: 5px!important; 
+  height: 25px!important;  
 }
-.webpage-input {
-  width: 100%;
-  padding: 5px 0px 5px 10px;
+.btn-sm {
+  padding: 0rem 0.5rem!important;
 }
-.webpage-input-address {
+.dropdown-xs {
+  /* padding: 1px; */
+  /* text-align: center!important;  */
+  line-height: 15px!important; 
+  height: 25px!important;
+}
+.binary-input {
   width: 100%;
-  padding: 5px 0px 5px 10px;
+  padding: 2px 10px;
+}
+.address-input {
+  width: 100%;
+  padding: 2px 0px;
 }
 .com-input {
   width: 100%;
-  padding: 2px 0px 2px 10px;
+  padding: 2px 10px;
 }
 .baud-input {
   width: 100%;
-  padding: 5px 0px 30px 10px;
+  padding: 2px 10px 15px 10px;
 }
 .btn-test-connection {
   width: 100%;
-  padding: 10px 10px 10px 10px;
+  padding: 5px 10px 2px 5px;
   text-align: left;
 }
 .btn-flash {
   width: 100%;
-  padding: 5px 10px 10px 10px;
+  padding: 5px 10px 5px 5px;
   text-align: left;
 }
 .btn-advanced {
   width: 100%;
-  padding: 5px 10px 5px 10px;
+  padding: 2px 10px 5px 5px;
   text-align: left;
 }
 .spinner-container {
@@ -485,12 +565,14 @@ export default {
 }
 .terminal {
   background-color: rgb(47, 47, 47);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.294), 0 6px 20px 0 rgba(0, 0, 0, 0.431);
   width: 100%;
   height: 220px;
   border-radius: 8px;
   text-align: start;
   resize: none;
   outline: none;
+  border: 0px;
 }
 .terminal-data {
   color: aliceblue;

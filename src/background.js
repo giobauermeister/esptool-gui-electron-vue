@@ -95,7 +95,7 @@ app.on('ready', async () => {
 })
 
 var firmwareFilePath, webpageFilePath;
-ipcMain.on('selectFirmwareFilePath', (event, args) => {
+ipcMain.on('selectBinaryPath_1', (event, args) => {
   console.log(args);
   console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
     firmwareFilePath = files[0];
@@ -103,7 +103,7 @@ ipcMain.on('selectFirmwareFilePath', (event, args) => {
     event.sender.send('firmwareFilePath', files[0]);
   }));  
 })
-ipcMain.on('selectWebpageFilePath', (event, args) => {
+ipcMain.on('selectBinaryPath_2', (event, args) => {
   console.log(args);
   console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
     webpageFilePath = files[0];
@@ -178,14 +178,14 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
   console.log("ComPort: " + cmdLineArgs.comPort);
   console.log("Firmware file: " + cmdLineArgs.firmwareFilePath);
   console.log("Webpage file: " + cmdLineArgs.webpageFilePath);
-  console.log("Firmware address: " + cmdLineArgs.firmwareAddress);
-  console.log("Webpage address: " + cmdLineArgs.webpageAddress);
+  console.log("Firmware address: " + cmdLineArgs.binaryAddress_1);
+  console.log("Webpage address: " + cmdLineArgs.binaryAddress_2);
   console.log('\n\n');  
   const python = spawn('esptool.py', ['-b', cmdLineArgs.baudrate, 
                                       '-p', cmdLineArgs.comPort, 
                                       'write_flash', 
-                                      cmdLineArgs.firmwareAddress, cmdLineArgs.firmwareFilePath,
-                                      cmdLineArgs.webpageAddress, cmdLineArgs.webpageFilePath]);
+                                      cmdLineArgs.binaryAddress_1, cmdLineArgs.firmwareFilePath,
+                                      cmdLineArgs.binaryAddress_2, cmdLineArgs.webpageFilePath]);
     
   
   var progressCounter = 0;
