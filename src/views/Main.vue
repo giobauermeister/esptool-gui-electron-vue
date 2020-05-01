@@ -12,7 +12,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   class="input-xs"
-                  v-model="binaryFile_1"
+                  v-model="binaryPath_1"
                   placeholder="Select firmware file"
                   :state="binaryInputState_1"
                 ></b-form-input>
@@ -43,7 +43,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   class="input-xs"
-                  v-model="binaryFile_2"
+                  v-model="binaryPath_2"
                   placeholder="Select spiffs file"
                   :state="binaryInputState_2"
                 ></b-form-input>
@@ -74,7 +74,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   class="input-xs"
-                  v-model="binaryFile_3"
+                  v-model="binaryPath_3"
                   placeholder="Select third binary file"
                   :state="binaryInputState_3"
                 ></b-form-input>
@@ -105,7 +105,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   class="input-xs"
-                  v-model="binaryFile_4"
+                  v-model="binaryPath_4"
                   placeholder="Select fourth binary file"
                   :state="binaryInputState_4"
                 ></b-form-input>
@@ -266,18 +266,26 @@ export default {
   computed: {},
   data() {
     return {
-      binaryFile_1: "",
-      binaryFile_2: "",
-      comPort: "",
-      baudrateSpeed: "",
+      binaryPath_1: "",
+      binaryPath_2: "",
+      binaryPath_3: "",
+      binaryPath_4: "",
       binaryAddress_1: "",
       binaryAddress_2: "",
+      binaryAddress_3: "",
+      binaryAddress_4: "",
+      comPort: "",
+      baudrateSpeed: "",
       comPortInputState: null,
       baudrateInputState: null,
       binaryInputState_1: null,
       binaryInputState_2: null,
+      binaryInputState_3: null,
+      binaryInputState_4: null,
       addressInputState_1: null,
       addressInputState_2: null,
+      addressInputState_3: null,
+      addressInputState_4: null,
       flashProgressValue: 0,
       selected: null,
       showSpinner: false,
@@ -298,12 +306,17 @@ export default {
       baudrateList: [{ value: 115200 }, { value: 921600 }],
       terminalData: "",
       cmdLineArgs: {
+        numberOfBinaries: [false, false, false, false],
         baudrate: this.baudrate,
         comPort: this.comPort,
-        firmwareFilePath: this.binaryFile_1,
+        binaryPath_1: this.binaryPath_1,
         binaryAddress_1: this.binaryAddress_1,
-        webpageFilePath: this.binaryFile_2,
-        binaryAddress_2: this.binaryAddress_2
+        binaryPath_2: this.binaryPath_2,
+        binaryAddress_2: this.binaryAddress_2,
+        binaryPath_3: this.binaryPath_3,
+        binaryAddress_3: this.binaryAddress_3,
+        binaryPath_4: this.binaryPath_4,
+        binaryAddress_4: this.binaryAddress_4
       }
     };
   },
@@ -314,15 +327,25 @@ export default {
     function mapValue(x, in_min, in_max, out_min, out_max) {
       return ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
     }
-    ipcRenderer.on("firmwareFilePath", (event, arg) => {
-      console.log("firmwareFilePath");
+    ipcRenderer.on("binaryPath_1", (event, arg) => {
+      console.log("binaryPath_1");
       console.log(arg);
-      this.binaryFile_1 = arg;
+      this.binaryPath_1 = arg;
     });
-    ipcRenderer.on("webpageFilePath", (event, arg) => {
-      console.log("webpageFilePath");
+    ipcRenderer.on("binaryPath_2", (event, arg) => {
+      console.log("binaryPath_2");
       console.log(arg);
-      this.binaryFile_2 = arg;
+      this.binaryPath_2 = arg;
+    });
+    ipcRenderer.on("binaryPath_3", (event, arg) => {
+      console.log("binaryPath_3");
+      console.log(arg);
+      this.binaryPath_3 = arg;
+    });
+    ipcRenderer.on("binaryPath_4", (event, arg) => {
+      console.log("binaryPath_4");
+      console.log(arg);
+      this.binaryPath_4 = arg;
     });
     ipcRenderer.on("esptool-error", (event, arg) => {
       console.log("esptool-error");
@@ -404,10 +427,12 @@ export default {
       this.comPortInputState = null;
     },
     testConnection: function() {
+      this.comPortInputState = null;
+      this.baudrateInputState = null;
       if (this.comPort == "" || this.baudrateSpeed == "") {
         this.makeToast("danger", "Select COM port and Baudrate");
-        this.comPortInputState = false;
-        this.baudrateInputState = false;
+        if (this.comPort == "") this.comPortInputState = false;
+        if (this.baudrateSpeed == "") this.baudrateInputState = false;
       } else {
         this.flashProgressValue = 0;
         this.showCheckMark = false;
@@ -423,16 +448,14 @@ export default {
       }
     },
     flash: function() {
-      if (this.comPort == "" || this.baudrateSpeed == "") {
+      if (this.comPort == "" || this.baudrateSpeed == "") {                        
         this.makeToast("danger", "Select COM port and Baudrate");
-        this.comPortInputState = false;
-        this.baudrateInputState = false;
-      } else if (this.binaryFile_1 == "" || this.binaryAddress_1 == "") {
+        if (this.comPort == "") this.comPortInputState = false;
+        if (this.baudrateSpeed == "") this.baudrateInputState = false;
+      } else if (this.binaryPath_1 == "" || this.binaryAddress_1 == "") {
         this.makeToast("danger", "Select at least firmware file and address");
-        this.binaryInputState_1 = false;
-        //this.binaryInputState_2 = false;
-        this.addressInputState_1 = false;
-        //this.addressInputState_2 = false;
+        if (this.binaryPath_1 == "") this.binaryInputState_1 = false;
+        if (this.binaryAddress_1 == "") this.addressInputState_1 = false;
       } else {
         this.flashProgressValue = 0;
         this.showCheckMark = false;
@@ -442,8 +465,33 @@ export default {
 
         this.cmdLineArgs.baudrate = this.baudrateSpeed;
         this.cmdLineArgs.comPort = this.comPort;
-        this.cmdLineArgs.firmwareFilePath = this.binaryFile_1;
-        this.cmdLineArgs.webpageFilePath = this.binaryFile_2;
+
+        if(this.binaryPath_1 != "" && this.binaryAddress_1 != "") {
+          this.cmdLineArgs.numberOfBinaries[0] = true;
+          this.cmdLineArgs.binaryPath_1 = this.binaryPath_1;
+          this.cmdLineArgs.binaryAddress_1 = this.binaryAddress_1;
+        }
+
+        if(this.binaryPath_2 != "" && this.binaryAddress_2 != "") {
+          this.cmdLineArgs.numberOfBinaries[1] = true;
+          this.cmdLineArgs.binaryPath_2 = this.binaryPath_2;
+          this.cmdLineArgs.binaryAddress_2 = this.binaryAddress_2;
+        }
+
+        if(this.binaryPath_3 != "" && this.binaryAddress_3 != "") {
+          this.cmdLineArgs.numberOfBinaries[2] = true;
+          this.cmdLineArgs.binaryPath_3 = this.binaryPath_3;
+          this.cmdLineArgs.binaryAddress_3 = this.binaryAddress_3;
+        }
+
+        if(this.binaryPath_4 != "" && this.binaryAddress_4 != "") {
+          this.cmdLineArgs.numberOfBinaries[3] = true;
+          this.cmdLineArgs.binaryPath_4 = this.binaryPath_4;
+          this.cmdLineArgs.binaryAddress_4 = this.binaryAddress_4;
+        }
+
+        this.cmdLineArgs.binaryPath_1 = this.binaryPath_1;
+        this.cmdLineArgs.binaryPath_2 = this.binaryPath_2;
         this.cmdLineArgs.binaryAddress_1 = this.binaryAddress_1;
         this.cmdLineArgs.binaryAddress_2 = this.binaryAddress_2;
 
@@ -452,14 +500,22 @@ export default {
       }
     },
     selectBinaryPath_1() {
-      console.log("get firmware file path...");
       ipcRenderer.send("selectBinaryPath_1");
       this.binaryInputState_1 = null;
       this.addressInputState_1 = null;
     },
     selectBinaryPath_2() {
-      console.log("get webpage file path...");
       ipcRenderer.send("selectBinaryPath_2");
+      //this.binaryInputState_2 = null;
+      //this.addressInputState_2 = null;
+    },
+    selectBinaryPath_3() {
+      ipcRenderer.send("selectBinaryPath_3");
+      //this.binaryInputState_2 = null;
+      //this.addressInputState_2 = null;
+    },
+    selectBinaryPath_4() {
+      ipcRenderer.send("selectBinaryPath_4");
       //this.binaryInputState_2 = null;
       //this.addressInputState_2 = null;
     },

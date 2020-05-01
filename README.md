@@ -4,14 +4,14 @@
 
 ## System requirements
 - Python installed
-- [esptool.py](https://github.com/espressif/esptool)
+- [esptool.py](https://github.com/espressif/esptool) installed
 - esptool.py configured in PATH
 
 ## Instructions for v0.1.0-beta
 You should have two binaries in hand for flashing. This version demands both firmware and spiffs file to be in place as well as their memory address.
 
 ## ToDo
-- add more fields for more than two binary files (partitions.bin, etc)
+- [DONE, needs more testing] add more fields for more than two binary files (partitions.bin, etc)
 - enable Advanced button for advanced configurations like flash mode, size, frequency and other options from [here](https://github.com/espressif/esptool/wiki/Advanced-Options). 
 
 
