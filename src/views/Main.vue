@@ -380,7 +380,7 @@ export default {
       divContainer.scrollTop = divContainer.scrollHeight;
     });
     ipcRenderer.on("progress-bar", (event, arg) => {
-      this.flashProgressValue = mapValue(arg, 0, 36, 0, 100);
+      this.flashProgressValue = mapValue(arg, 0, 25, 0, 100);
     });
 
     ipcRenderer.on("esptool-error-code", (event, errorCode) => {
@@ -391,6 +391,7 @@ export default {
           this.showSpinner = false;
           this.showErrorMark = false;
           this.showCheckMark = true;
+          this.flashProgressValue = 100;
           //this.terminalData = "";
           //this.terminalData = esptoolOutput;
           break;
@@ -448,6 +449,13 @@ export default {
       }
     },
     flash: function() {
+      this.cmdLineArgs.numberOfBinaries[0] = false;
+      this.cmdLineArgs.numberOfBinaries[1] = false;
+      this.cmdLineArgs.numberOfBinaries[2] = false;
+      this.cmdLineArgs.numberOfBinaries[3] = false;
+      this.addressInputState_2 = null;
+      this.addressInputState_3 = null;
+      this.addressInputState_4 = null;
       if (this.comPort == "" || this.baudrateSpeed == "") {                        
         this.makeToast("danger", "Select COM port and Baudrate");
         if (this.comPort == "") this.comPortInputState = false;
@@ -456,6 +464,13 @@ export default {
         this.makeToast("danger", "Select at least firmware file and address");
         if (this.binaryPath_1 == "") this.binaryInputState_1 = false;
         if (this.binaryAddress_1 == "") this.addressInputState_1 = false;
+      } else if((this.binaryPath_2 != "" && this.binaryAddress_2 == "") || 
+                (this.binaryPath_3 != "" && this.binaryAddress_3 == "") || 
+                (this.binaryPath_4 != "" && this.binaryAddress_4 == "")) { 
+        this.makeToast("danger", "Address should not be empty");
+        if(this.binaryPath_2 != "" && this.binaryAddress_2 == "") this.addressInputState_2 = false;
+        if(this.binaryPath_3 != "" && this.binaryAddress_3 == "") this.addressInputState_3 = false;
+        if(this.binaryPath_4 != "" && this.binaryAddress_4 == "") this.addressInputState_4 = false;           
       } else {
         this.flashProgressValue = 0;
         this.showCheckMark = false;
@@ -563,7 +578,7 @@ export default {
 }
 .baud-input {
   width: 100%;
-  padding: 2px 10px 15px 10px;
+  padding: 2px 10px 5px 10px;
 }
 .btn-test-connection {
   width: 100%;
@@ -613,7 +628,7 @@ export default {
 }
 .flash-progress {
   width: 100%;
-  padding: 0px 10px 10px 10px;
+  padding: 0px 10px 15px 10px;
 }
 .terminal-container {
   width: 100%;

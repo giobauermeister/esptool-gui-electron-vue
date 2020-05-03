@@ -199,19 +199,24 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
   console.log('\n\n');
 
   var esptoolOptions;
+  var numberOfBinaries = 0;
   esptoolOptions = ['-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'write_flash']
 
   if(cmdLineArgs.numberOfBinaries[0] == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_1, cmdLineArgs.binaryPath_1);
+    numberOfBinaries++;
   }
   if(cmdLineArgs.numberOfBinaries[1] == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_2, cmdLineArgs.binaryPath_2);
+    numberOfBinaries++;
   }
   if(cmdLineArgs.numberOfBinaries[2] == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_3, cmdLineArgs.binaryPath_3);
+    numberOfBinaries++;
   }
   if(cmdLineArgs.numberOfBinaries[3] == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_4, cmdLineArgs.binaryPath_4);
+    numberOfBinaries++;
   }
   
   console.log(esptoolOptions);  
@@ -226,7 +231,8 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
       console.log("LOG READLINE stdout: ");      
       console.log(line);
       event.sender.send('line-esptool-output', line + '\n');
-      event.sender.send('progress-bar', progressCounter++);
+      event.sender.send('progress-bar', progressCounter++/numberOfBinaries);
+      console.log("number of lines: " + progressCounter);      
     }).on('close', function() {
       console.log("LOG READLINE stdout CLOSE");
   });

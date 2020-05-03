@@ -1,6 +1,6 @@
 # esptool-vue-electron-gui
 
-![app screenshot](https://raw.githubusercontent.com/giobauermeister/esptool-vue-electron-gui/master/build/esptoolgui.png)
+![app screenshot](https://raw.githubusercontent.com/giobauermeister/esptool-vue-electron-gui/master/build/app-demonstration.gif)
 
 ## System requirements
 - Python installed
@@ -12,6 +12,7 @@ You should have two binaries in hand for flashing. This version demands both fir
 
 ## ToDo
 - [DONE, needs more testing] add more fields for more than two binary files (partitions.bin, etc)
+- clean log messages throughout application
 - enable Advanced button for advanced configurations like flash mode, size, frequency and other options from [here](https://github.com/espressif/esptool/wiki/Advanced-Options). 
 
 
