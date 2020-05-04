@@ -1,4 +1,8 @@
-# esptool-vue-electron-gui
+# esptool.py GUI
+
+Flash you ESP32 binaries in a flash!
+
+A cross platform app built with [Electron](https://www.electronjs.org/)
 
 ![app screenshot](https://raw.githubusercontent.com/giobauermeister/esptool-vue-electron-gui/master/build/app-demonstration.gif)
 
@@ -6,6 +10,9 @@
 - Python installed
 - [esptool.py](https://github.com/espressif/esptool) installed
 - esptool.py configured in PATH
+
+## Instructions for v1.0.0
+You can flash one firmware binary or up to 4 binary files.
 
 ## Instructions for v0.1.0-beta
 You should have two binaries in hand for flashing. This version demands both firmware and spiffs file to be in place as well as their memory address.
@@ -32,8 +39,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ### Reference
 ### Electron inter process communication tutorial
 https://www.tutorialspoint.com/electron/electron_inter_process_communication.htm
-### run Python from nodejs
+### run Python script from nodejs
 https://ourcodeworld.com/articles/read/286/how-to-execute-a-python-script-and-retrieve-output-data-and-errors-in-node-js
-### test nodejs readline module for parsing stdout stream line by line
+### readline module for parsing stdout stream line by line
 https://html.developreference.com/article/21696559/NodeJS+spawn+stdout+string+format
 https://www.w3schools.com/nodejs/ref_readline.asp

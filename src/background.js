@@ -28,7 +28,7 @@ function createWindow () {
     width: 800, 
     height: 450,
     icon: path.join(__dirname, 'build/flash.png'),
-    resizable: true,
+    resizable: false,
     useContentSize: true,
     title: "ESP32 Flasher esptool.py GUI", 
     webPreferences: {
