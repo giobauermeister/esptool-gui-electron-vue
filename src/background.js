@@ -26,7 +26,7 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ 
     width: 800, 
-    height: 450,
+    height: 460,
     icon: path.join(__dirname, 'build/flash.png'),
     resizable: false,
     useContentSize: true,
