@@ -14,9 +14,6 @@ A cross platform app built with [Electron](https://www.electronjs.org/)
 ## Instructions for v1.0.0
 You can flash one firmware binary or up to 4 binary files.
 
-## Instructions for v0.1.0-beta
-You should have two binaries in hand for flashing. This version demands both firmware and spiffs file to be in place as well as their memory address.
-
 ## ToDo
 - [DONE, needs more testing] add more fields for more than two binary files (partitions.bin, etc)
 - clean log messages throughout application
