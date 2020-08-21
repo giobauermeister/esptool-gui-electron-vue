@@ -26,11 +26,11 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ 
     width: 800, 
-    height: 460,
+    height: 490,
     icon: path.join(__dirname, 'build/flash.png'),
     resizable: false,
     useContentSize: true,
-    title: "ESP32 Flasher esptool.py GUI", 
+    title: "ESP32 Flasher esptool.py GUI - Bauertronix", 
     webPreferences: {
       nodeIntegration: true,
       devTools: false
@@ -127,6 +127,14 @@ ipcMain.on('selectBinaryPath_4', (event, args) => {
     event.sender.send('binaryPath_4', files[0]);
   }));  
 })
+ipcMain.on('selectBinaryPath_5', (event, args) => {
+  console.log(args);
+  console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
+    webpageFilePath = files[0];
+    console.log(files[0]);
+    event.sender.send('binaryPath_5', files[0]);
+  }));  
+})
 
 // Event handler for asynchronous incoming messages
 ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
@@ -216,6 +224,10 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
   }
   if(cmdLineArgs.numberOfBinaries[3] == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_4, cmdLineArgs.binaryPath_4);
+    numberOfBinaries++;
+  }
+  if(cmdLineArgs.numberOfBinaries[4] == true) {
+    esptoolOptions.push(cmdLineArgs.binaryAddress_5, cmdLineArgs.binaryPath_5);
     numberOfBinaries++;
   }
   

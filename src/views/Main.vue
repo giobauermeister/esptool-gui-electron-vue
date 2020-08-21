@@ -75,7 +75,7 @@
                 <b-form-input
                   class="input-xs"
                   v-model="binaryPath_3"
-                  placeholder="Select third binary file"
+                  placeholder="Select 3rd binary file"
                   :state="binaryInputState_3"
                 ></b-form-input>
               </b-input-group>
@@ -106,7 +106,7 @@
                 <b-form-input
                   class="input-xs"
                   v-model="binaryPath_4"
-                  placeholder="Select fourth binary file"
+                  placeholder="Select 4th binary file"
                   :state="binaryInputState_4"
                 ></b-form-input>
               </b-input-group>
@@ -121,6 +121,37 @@
                 v-model="binaryAddress_4"
                 v-on:input="addressInputState_4 = null; binaryInputState_4 = null"
                 :state="addressInputState_4"
+              ></b-form-input>
+            </div>
+          </b-col>
+        </b-row>
+
+        <!-- 5 Binary and address -->
+        <b-row no-gutters>
+          <b-col>
+            <div class="binary-input">
+              <b-input-group size="sm">
+                <b-input-group-prepend>
+                  <b-button class="btn-xs" v-on:click="selectBinaryPath_5" variant="info">Browse</b-button>
+                </b-input-group-prepend>
+                <b-form-input
+                  class="input-xs"
+                  v-model="binaryPath_5"
+                  placeholder="Select 5th binary file"
+                  :state="binaryInputState_5"
+                ></b-form-input>
+              </b-input-group>
+            </div>
+          </b-col>
+          <b-col cols="3">
+            <div class="address-input">
+              <b-form-input
+                class="input-xs"
+                size="sm" 
+                placeholder="address"
+                v-model="binaryAddress_5"
+                v-on:input="addressInputState_5 = null; binaryInputState_5 = null"
+                :state="addressInputState_5"
               ></b-form-input>
             </div>
           </b-col>
@@ -270,10 +301,12 @@ export default {
       binaryPath_2: "",
       binaryPath_3: "",
       binaryPath_4: "",
+      binaryPath_5: "",
       binaryAddress_1: "",
       binaryAddress_2: "",
       binaryAddress_3: "",
       binaryAddress_4: "",
+      binaryAddress_5: "",
       comPort: "",
       baudrateSpeed: "",
       comPortInputState: null,
@@ -282,10 +315,12 @@ export default {
       binaryInputState_2: null,
       binaryInputState_3: null,
       binaryInputState_4: null,
+      binaryInputState_5: null,
       addressInputState_1: null,
       addressInputState_2: null,
       addressInputState_3: null,
       addressInputState_4: null,
+      addressInputState_5: null,
       flashProgressValue: 0,
       selected: null,
       showSpinner: false,
@@ -306,7 +341,7 @@ export default {
       baudrateList: [{ value: 115200 }, { value: 921600 }],
       terminalData: "",
       cmdLineArgs: {
-        numberOfBinaries: [false, false, false, false],
+        numberOfBinaries: [false, false, false, false, false],
         baudrate: this.baudrate,
         comPort: this.comPort,
         binaryPath_1: this.binaryPath_1,
@@ -316,7 +351,9 @@ export default {
         binaryPath_3: this.binaryPath_3,
         binaryAddress_3: this.binaryAddress_3,
         binaryPath_4: this.binaryPath_4,
-        binaryAddress_4: this.binaryAddress_4
+        binaryAddress_4: this.binaryAddress_4,
+        binaryPath_5: this.binaryPath_5,
+        binaryAddress_5: this.binaryAddress_5
       }
     };
   },
@@ -346,6 +383,11 @@ export default {
       console.log("binaryPath_4");
       console.log(arg);
       this.binaryPath_4 = arg;
+    });
+    ipcRenderer.on("binaryPath_5", (event, arg) => {
+      console.log("binaryPath_5");
+      console.log(arg);
+      this.binaryPath_5 = arg;
     });
     ipcRenderer.on("esptool-error", (event, arg) => {
       console.log("esptool-error");
@@ -456,6 +498,7 @@ export default {
       this.addressInputState_2 = null;
       this.addressInputState_3 = null;
       this.addressInputState_4 = null;
+      this.addressInputState_5 = null;
       if (this.comPort == "" || this.baudrateSpeed == "") {                        
         this.makeToast("danger", "Select COM port and Baudrate");
         if (this.comPort == "") this.comPortInputState = false;
@@ -466,11 +509,13 @@ export default {
         if (this.binaryAddress_1 == "") this.addressInputState_1 = false;
       } else if((this.binaryPath_2 != "" && this.binaryAddress_2 == "") || 
                 (this.binaryPath_3 != "" && this.binaryAddress_3 == "") || 
-                (this.binaryPath_4 != "" && this.binaryAddress_4 == "")) { 
+                (this.binaryPath_4 != "" && this.binaryAddress_4 == "") ||
+                (this.binaryPath_5 != "" && this.binaryAddress_5 == "")) { 
         this.makeToast("danger", "Address should not be empty");
         if(this.binaryPath_2 != "" && this.binaryAddress_2 == "") this.addressInputState_2 = false;
         if(this.binaryPath_3 != "" && this.binaryAddress_3 == "") this.addressInputState_3 = false;
-        if(this.binaryPath_4 != "" && this.binaryAddress_4 == "") this.addressInputState_4 = false;           
+        if(this.binaryPath_4 != "" && this.binaryAddress_4 == "") this.addressInputState_4 = false;
+        if(this.binaryPath_5 != "" && this.binaryAddress_5 == "") this.addressInputState_5 = false;           
       } else {
         this.flashProgressValue = 0;
         this.showCheckMark = false;
@@ -505,6 +550,12 @@ export default {
           this.cmdLineArgs.binaryAddress_4 = this.binaryAddress_4;
         }
 
+        if(this.binaryPath_5 != "" && this.binaryAddress_5 != "") {
+          this.cmdLineArgs.numberOfBinaries[4] = true;
+          this.cmdLineArgs.binaryPath_5 = this.binaryPath_5;
+          this.cmdLineArgs.binaryAddress_5 = this.binaryAddress_5;
+        }
+
         this.cmdLineArgs.binaryPath_1 = this.binaryPath_1;
         this.cmdLineArgs.binaryPath_2 = this.binaryPath_2;
         this.cmdLineArgs.binaryAddress_1 = this.binaryAddress_1;
@@ -531,6 +582,11 @@ export default {
     },
     selectBinaryPath_4() {
       ipcRenderer.send("selectBinaryPath_4");
+      //this.binaryInputState_2 = null;
+      //this.addressInputState_2 = null;
+    },
+    selectBinaryPath_5() {
+      ipcRenderer.send("selectBinaryPath_5");
       //this.binaryInputState_2 = null;
       //this.addressInputState_2 = null;
     },
