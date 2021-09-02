@@ -1,10 +1,15 @@
 <template>
   <div class="home">
     <b-row>
-      <b-col cols="8">
+
+      <b-col cols="12">
+<div class="com-input">
+<img alt="FreeSK8 Rocks" src="../assets/freesk8.png" height="50">        
+</div>
         <!-- 1 Binary and address -->
         <b-row no-gutters>
           <b-col>
+
             <div class="binary-input">
               <b-input-group size="sm">
                 <b-input-group-prepend>
@@ -19,143 +24,11 @@
               </b-input-group>
             </div>
           </b-col>
-          <b-col cols="3">
-            <div class="address-input">
-              <b-form-input
-                class="input-xs"
-                size="sm"                
-                placeholder="address"
-                v-model="binaryAddress_1"
-                v-on:input="addressInputState_1 = null; binaryInputState_1 = null"
-                :state="addressInputState_1"
-              ></b-form-input>
-            </div>
-          </b-col>
+          
         </b-row>
 
-        <!-- 2 Binary and address -->
-        <b-row no-gutters>
-          <b-col>
-            <div class="binary-input">
-              <b-input-group size="sm">
-                <b-input-group-prepend>
-                  <b-button class="btn-xs" v-on:click="selectBinaryPath_2" variant="info">Browse</b-button>
-                </b-input-group-prepend>
-                <b-form-input
-                  class="input-xs"
-                  v-model="binaryPath_2"
-                  placeholder="Select spiffs file"
-                  :state="binaryInputState_2"
-                ></b-form-input>
-              </b-input-group>
-            </div>
-          </b-col>
-          <b-col cols="3">
-            <div class="address-input">
-              <b-form-input
-                class="input-xs"
-                size="sm" 
-                placeholder="address"
-                v-model="binaryAddress_2"
-                v-on:input="addressInputState_2 = null; binaryInputState_2 = null"
-                :state="addressInputState_2"
-              ></b-form-input>
-            </div>
-          </b-col>
-        </b-row>
+        
 
-        <!-- 3 Binary and address -->
-        <b-row no-gutters>
-          <b-col>
-            <div class="binary-input">
-              <b-input-group size="sm">
-                <b-input-group-prepend>
-                  <b-button class="btn-xs" v-on:click="selectBinaryPath_3" variant="info">Browse</b-button>
-                </b-input-group-prepend>
-                <b-form-input
-                  class="input-xs"
-                  v-model="binaryPath_3"
-                  placeholder="Select 3rd binary file"
-                  :state="binaryInputState_3"
-                ></b-form-input>
-              </b-input-group>
-            </div>
-          </b-col>
-          <b-col cols="3">
-            <div class="address-input">
-              <b-form-input
-                class="input-xs"
-                size="sm" 
-                placeholder="address"
-                v-model="binaryAddress_3"
-                v-on:input="addressInputState_3 = null; binaryInputState_3 = null"
-                :state="addressInputState_3"
-              ></b-form-input>
-            </div>
-          </b-col>
-        </b-row>
-
-        <!-- 4 Binary and address -->
-        <b-row no-gutters>
-          <b-col>
-            <div class="binary-input">
-              <b-input-group size="sm">
-                <b-input-group-prepend>
-                  <b-button class="btn-xs" v-on:click="selectBinaryPath_4" variant="info">Browse</b-button>
-                </b-input-group-prepend>
-                <b-form-input
-                  class="input-xs"
-                  v-model="binaryPath_4"
-                  placeholder="Select 4th binary file"
-                  :state="binaryInputState_4"
-                ></b-form-input>
-              </b-input-group>
-            </div>
-          </b-col>
-          <b-col cols="3">
-            <div class="address-input">
-              <b-form-input
-                class="input-xs"
-                size="sm" 
-                placeholder="address"
-                v-model="binaryAddress_4"
-                v-on:input="addressInputState_4 = null; binaryInputState_4 = null"
-                :state="addressInputState_4"
-              ></b-form-input>
-            </div>
-          </b-col>
-        </b-row>
-
-        <!-- 5 Binary and address -->
-        <b-row no-gutters>
-          <b-col>
-            <div class="binary-input">
-              <b-input-group size="sm">
-                <b-input-group-prepend>
-                  <b-button class="btn-xs" v-on:click="selectBinaryPath_5" variant="info">Browse</b-button>
-                </b-input-group-prepend>
-                <b-form-input
-                  class="input-xs"
-                  v-model="binaryPath_5"
-                  placeholder="Select 5th binary file"
-                  :state="binaryInputState_5"
-                ></b-form-input>
-              </b-input-group>
-            </div>
-          </b-col>
-          <b-col cols="3">
-            <div class="address-input">
-              <b-form-input
-                class="input-xs"
-                size="sm" 
-                placeholder="address"
-                v-model="binaryAddress_5"
-                v-on:input="addressInputState_5 = null; binaryInputState_5 = null"
-                :state="addressInputState_5"
-              ></b-form-input>
-            </div>
-          </b-col>
-        </b-row>
 
         <b-row no-gutters>
           <b-col cols="5">
@@ -171,52 +44,20 @@
                     >{{ item.port }}</b-dropdown-item>
                   </b-dropdown>
                 </template>
+
               </b-input-group>
             </div>
 
-            <div class="baud-input">
-              <b-input-group size="sm">
-                <b-form-input class="input-xs" v-model="baudrateSpeed" :state="baudrateInputState" placeholder></b-form-input>
-                <template v-slot:prepend>
-                  <b-dropdown class="dropdown-xs" size="sm" text="Baudrate " variant="info">
-                    <b-dropdown-item
-                      v-on:click="setBaudrate(baudrate.value)"
-                      v-bind:key="baudrate.value"
-                      v-for="baudrate in baudrateList"
-                    >{{ baudrate.value }}</b-dropdown-item>
-                  </b-dropdown>
-                </template>
-              </b-input-group>
+            <div class="com-input">
+              <b-button class="btn-xs" v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
             </div>
+      
           </b-col>
         </b-row>
       </b-col>
 
       <b-col>
-        <div class="btn-test-connection">
-          <b-button 
-            class="btn-xs"
-            v-on:click="testConnection"
-            style="width: 120px;"
-            size="sm"
-            variant="dark"
-          >Test connection</b-button>
-        </div>
 
-        <div class="btn-flash">
-          <b-button class="btn-xs" v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
-        </div>
-
-        <div class="btn-advanced">
-          <b-button 
-            class="btn-xs"
-            v-on:click="showAdvanced"
-            style="width: 120px;"
-            size="sm"
-            variant="dark"
-            disabled="true"
-          >Advanced</b-button>
-        </div>
       </b-col>
     </b-row>
 
@@ -297,18 +138,18 @@ export default {
   computed: {},
   data() {
     return {
-      binaryPath_1: "",
+      binaryPath_1: "/Included_firmware.bin",
       binaryPath_2: "",
       binaryPath_3: "",
       binaryPath_4: "",
       binaryPath_5: "",
-      binaryAddress_1: "",
+      binaryAddress_1: "0x10000",
       binaryAddress_2: "",
       binaryAddress_3: "",
       binaryAddress_4: "",
       binaryAddress_5: "",
       comPort: "",
-      baudrateSpeed: "",
+      baudrateSpeed: "921600",
       comPortInputState: null,
       baudrateInputState: null,
       binaryInputState_1: null,
@@ -422,7 +263,7 @@ export default {
       divContainer.scrollTop = divContainer.scrollHeight;
     });
     ipcRenderer.on("progress-bar", (event, arg) => {
-      this.flashProgressValue = mapValue(arg, 0, 25, 0, 100);
+      this.flashProgressValue = mapValue(arg, 0, 55, 0, 100);
     });
 
     ipcRenderer.on("esptool-error-code", (event, errorCode) => {
@@ -473,7 +314,7 @@ export default {
       this.comPortInputState = null;
       this.baudrateInputState = null;
       if (this.comPort == "" || this.baudrateSpeed == "") {
-        this.makeToast("danger", "Select COM port and Baudrate");
+        this.makeToast("danger", "Please select or enter a COM port");
         if (this.comPort == "") this.comPortInputState = false;
         if (this.baudrateSpeed == "") this.baudrateInputState = false;
       } else {
@@ -504,7 +345,7 @@ export default {
         if (this.comPort == "") this.comPortInputState = false;
         if (this.baudrateSpeed == "") this.baudrateInputState = false;
       } else if (this.binaryPath_1 == "" || this.binaryAddress_1 == "") {
-        this.makeToast("danger", "Select at least firmware file and address");
+        this.makeToast("danger", "Please select a firmware file");
         if (this.binaryPath_1 == "") this.binaryInputState_1 = false;
         if (this.binaryAddress_1 == "") this.addressInputState_1 = false;
       } else if((this.binaryPath_2 != "" && this.binaryAddress_2 == "") || 
@@ -567,8 +408,8 @@ export default {
     },
     selectBinaryPath_1() {
       ipcRenderer.send("selectBinaryPath_1");
-      this.binaryInputState_1 = null;
-      this.addressInputState_1 = null;
+      //this.binaryInputState_1 = null;
+      //this.addressInputState_1 = null;
     },
     selectBinaryPath_2() {
       ipcRenderer.send("selectBinaryPath_2");

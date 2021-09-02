@@ -8,6 +8,8 @@ const { spawn } = require('child_process');
 
 const { dialog } = require('electron')
 
+//TODO import scanSerialPorts from './components/scan_serial_ports'
+
 import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol,
@@ -26,11 +28,11 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ 
     width: 800, 
-    height: 490,
+    height: 420,
     icon: path.join(__dirname, 'build/flash.png'),
     resizable: false,
     useContentSize: true,
-    title: "ESP32 Flasher esptool.py GUI - Bauertronix", 
+    title: "OSRR Flash Utility", 
     webPreferences: {
       nodeIntegration: true,
       devTools: false
@@ -98,10 +100,17 @@ var firmwareFilePath, webpageFilePath;
 ipcMain.on('selectBinaryPath_1', (event, args) => {
   console.log(args);
   console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
-    firmwareFilePath = files[0];
-    console.log(files[0]);
-    event.sender.send('binaryPath_1', files[0]);
-  }));  
+    //firmwareFilePath = files[0];
+    //console.log(files[0]);
+    //event.sender.send('binaryPath_1', files[0]);
+  }).then(
+    function(result) {
+     console.log(result);
+     if (result['canceled'] == false) {
+      event.sender.send('binaryPath_1', result['filePaths'][0]);
+     }
+  }
+  ));  
 })
 ipcMain.on('selectBinaryPath_2', (event, args) => {
   console.log(args);
@@ -197,6 +206,9 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
 
 // Event handler for asynchronous incoming messages
 ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
+  if (cmdLineArgs.binaryPath_1 == "/Included_firmware.bin") {
+    cmdLineArgs.binaryPath_1 = path.join(process.resourcesPath, 'firmware/', 'osrr.bin');
+  }
   console.log('\n\n');
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
@@ -232,8 +244,10 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
   }
   
   console.log(esptoolOptions);  
-  
-  const python = spawn('esptool.py', esptoolOptions);    
+
+  console.log(process.resourcesPath);
+
+  const python = spawn(path.join(process.resourcesPath, 'firmware/', 'esptool.py'), esptoolOptions);    
   
   var progressCounter = 0;
   readline.createInterface({
