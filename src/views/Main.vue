@@ -31,7 +31,7 @@
 
 
         <b-row no-gutters>
-          <b-col cols="5">
+          <b-col cols="6">
             <div class="com-input">
               <b-input-group size="sm">
                 <b-form-input class="input-xs" v-model="comPort" :state="comPortInputState" placeholder></b-form-input>
@@ -44,7 +44,13 @@
                     >{{ item.port }}</b-dropdown-item>
                   </b-dropdown>
                 </template>
-
+                <b-button
+                  class="btn-xs"
+                  v-on:click="scanComPorts"
+                  style="width: 120px;"
+                  size="sm"
+                  variant="dark"
+                >Scan Ports</b-button>
               </b-input-group>
             </div>
 
@@ -205,6 +211,11 @@ export default {
     function mapValue(x, in_min, in_max, out_min, out_max) {
       return ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
     }
+    ipcRenderer.on("validComPorts", (event, arg) => {
+      console.log("validComPorts");
+      console.log(arg);
+      this.comPortsList = arg;
+    });
     ipcRenderer.on("binaryPath_1", (event, arg) => {
       console.log("binaryPath_1");
       console.log(arg);
@@ -309,6 +320,10 @@ export default {
       this.comPort = comPort;
       this.cmdLineArgs.comPort = comPort;
       this.comPortInputState = null;
+    },
+    scanComPorts: function() {
+      console.log("scanComPorts");
+      ipcRenderer.send("scan-com-ports");
     },
     testConnection: function() {
       this.comPortInputState = null;

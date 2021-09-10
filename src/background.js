@@ -8,7 +8,7 @@ const { spawn } = require('child_process');
 
 const { dialog } = require('electron')
 
-//TODO import scanSerialPorts from './components/scan_serial_ports'
+import scanSerialPorts from './components/scan_serial_ports'
 
 import { app, protocol, BrowserWindow } from 'electron'
 import {
@@ -39,6 +39,7 @@ function createWindow () {
   } })
   win.setMenu(null);
   win.on('page-title-updated', function(e) {
+    scanSerialPorts(win)
     e.preventDefault()   
   });
 
@@ -94,6 +95,10 @@ app.on('ready', async () => {
 
   }
   createWindow()
+})
+
+ipcMain.on('scan-com-ports', (event) => {
+  scanSerialPorts(win)
 })
 
 var firmwareFilePath, webpageFilePath;

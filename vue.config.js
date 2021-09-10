@@ -1,6 +1,7 @@
   module.exports = {
     pluginOptions: {
       electronBuilder: {
+        externals: ['serialport'],
         builderOptions: {
           // options placed here will be merged with default configuration and passed to electron-builder
             "productName": "OSRR Flash Tool",
