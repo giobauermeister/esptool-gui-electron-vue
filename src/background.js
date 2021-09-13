@@ -225,7 +225,9 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
 
   var esptoolOptions;
   var numberOfBinaries = 0;
-  esptoolOptions = ['-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'write_flash']
+  esptoolOptions = [
+    path.join(process.resourcesPath, 'firmware', 'esptool.py'),
+    '-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'write_flash'];
 
   if(cmdLineArgs.numberOfBinaries[0] == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_1, cmdLineArgs.binaryPath_1);
@@ -252,7 +254,7 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
 
   console.log(process.resourcesPath);
 
-  const python = spawn(path.join(process.resourcesPath, 'firmware/', 'esptool.py'), esptoolOptions);    
+  const python = spawn('python', esptoolOptions);
   
   var progressCounter = 0;
   readline.createInterface({
