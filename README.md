@@ -8,6 +8,7 @@ A cross platform app built with [Electron](https://www.electronjs.org/)
 
 ## System requirements
 - [Python](https://www.python.org/downloads/) with [pyserial](https://pyserial.readthedocs.io/en/latest/pyserial.html#installation)
+- If your Serial/COM port isn't listed you may need [CP210x drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers) installed.
 
 ## Instructions
 
