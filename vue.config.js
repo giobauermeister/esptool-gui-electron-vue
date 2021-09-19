@@ -1,23 +1,33 @@
   module.exports = {
     pluginOptions: {
       electronBuilder: {
+        externals: ['serialport'],
         builderOptions: {
           // options placed here will be merged with default configuration and passed to electron-builder
-            "productName": "ESP32 Flasher esptool.py GUI",
-            "appId": "com.bauertronix.esp32flasher",
+            "productName": "OSRR Flash Tool",
+            "appId": "com.derelictrobot.osrr-fw-utility",
+            "extraResources": [
+              {
+                "from": "./src/firmware/",
+                "to": "firmware",
+                "filter": [
+                  "**/*"
+                ]
+              }
+            ],
             "win": {
               "target": ["portable"],
               "icon": "build/flash.ico"
             },
             "portable": {
-              "artifactName": "esp32_flasher_esptool_${version}.exe"
+              "artifactName": "osrr_flash_utility_${version}.exe"
             },
             "linux": {
               "target": ["appImage"],
               "icon": "build/flash.png"
             },
             "appImage": {
-              "artifactName": "esp32_flasher_esptool_${version}.AppImage"
+              "artifactName": "osrr_flash_utility_${version}.AppImage"
             }
             // "directories": {
             //     "output": "electron/output",
