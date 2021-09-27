@@ -115,7 +115,7 @@ ipcMain.on('selectBinaryPath_1', (event, args) => {
       event.sender.send('binaryPath_1', result['filePaths'][0]);
      }
   }
-  ));  
+  ));
 })
 ipcMain.on('selectBinaryPath_2', (event, args) => {
   console.log(args);
@@ -127,11 +127,14 @@ ipcMain.on('selectBinaryPath_2', (event, args) => {
 })
 ipcMain.on('selectBinaryPath_3', (event, args) => {
   console.log(args);
-  console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {
-    webpageFilePath = files[0];
-    console.log(files[0]);
-    event.sender.send('binaryPath_3', files[0]);
-  }));  
+  console.log(dialog.showOpenDialog({ filters: [{ name: 'Binary file', extensions: ['bin'] }], properties: ['openFile'] }, function(files) {}).then(
+    function(result) {
+     console.log(result);
+     if (result['canceled'] == false) {
+      event.sender.send('binaryPath_3', result['filePaths'][0]);
+     }
+  }
+  ));
 })
 ipcMain.on('selectBinaryPath_4', (event, args) => {
   console.log(args);
@@ -211,16 +214,24 @@ ipcMain.on('test-esptool-connection', (event, cmdLineArgs) => {
 
 // Event handler for asynchronous incoming messages
 ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
-  if (cmdLineArgs.binaryPath_1 == "/Included_firmware.bin") {
-    cmdLineArgs.binaryPath_1 = path.join(process.resourcesPath, 'firmware/', 'osrr.bin');
+  if (cmdLineArgs.binaryPath_3 == "/Included_firmware.bin") {
+    cmdLineArgs.binaryPath_3 = path.join(process.resourcesPath, 'firmware/', 'osrr.bin');
+  }
+  console.log("start-esptool-flash::flashAll? " + cmdLineArgs.flashAll);
+  if (cmdLineArgs.flashAll) {
+    cmdLineArgs.binaryPath_1 = path.join(process.resourcesPath, 'firmware/', 'bootloader.bin');
+    cmdLineArgs.binaryPath_2 = path.join(process.resourcesPath, 'firmware/', 'partition-table.bin');
+    cmdLineArgs.binaryPath_4 = path.join(process.resourcesPath, 'firmware/', 'storage.bin');
+  } else {
+
   }
   console.log('\n\n');
   console.log("Baudrate: " + cmdLineArgs.baudrate);
   console.log("ComPort: " + cmdLineArgs.comPort);
-  console.log("Firmware file: " + cmdLineArgs.binaryPath_1);
-  console.log("Webpage file: " + cmdLineArgs.binaryPath_2);
-  console.log("Firmware address: " + cmdLineArgs.binaryAddress_1);
-  console.log("Webpage address: " + cmdLineArgs.binaryAddress_2);
+  console.log("File 1: " + cmdLineArgs.binaryPath_1 + " at: " + cmdLineArgs.binaryAddress_1);
+  console.log("File 2: " + cmdLineArgs.binaryPath_2 + " at: " + cmdLineArgs.binaryAddress_2);
+  console.log("File 3: " + cmdLineArgs.binaryPath_3 + " at: " + cmdLineArgs.binaryAddress_3);
+  console.log("File 4: " + cmdLineArgs.binaryPath_4 + " at: " + cmdLineArgs.binaryAddress_4);
   console.log('\n\n');
 
   var esptoolOptions;
@@ -229,24 +240,21 @@ ipcMain.on('start-esptool-flash', (event, cmdLineArgs) => {
     path.join(process.resourcesPath, 'firmware', 'esptool.py'),
     '-b', cmdLineArgs.baudrate, '-p', cmdLineArgs.comPort, 'write_flash'];
 
-  if(cmdLineArgs.numberOfBinaries[0] == true) {
+  if(cmdLineArgs.flashAll == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_1, cmdLineArgs.binaryPath_1);
     numberOfBinaries++;
   }
-  if(cmdLineArgs.numberOfBinaries[1] == true) {
+  if(cmdLineArgs.flashAll == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_2, cmdLineArgs.binaryPath_2);
     numberOfBinaries++;
   }
-  if(cmdLineArgs.numberOfBinaries[2] == true) {
-    esptoolOptions.push(cmdLineArgs.binaryAddress_3, cmdLineArgs.binaryPath_3);
-    numberOfBinaries++;
-  }
-  if(cmdLineArgs.numberOfBinaries[3] == true) {
+
+  // Always include firmware file
+  esptoolOptions.push(cmdLineArgs.binaryAddress_3, cmdLineArgs.binaryPath_3);
+  numberOfBinaries++;
+
+  if(cmdLineArgs.flashAll == true) {
     esptoolOptions.push(cmdLineArgs.binaryAddress_4, cmdLineArgs.binaryPath_4);
-    numberOfBinaries++;
-  }
-  if(cmdLineArgs.numberOfBinaries[4] == true) {
-    esptoolOptions.push(cmdLineArgs.binaryAddress_5, cmdLineArgs.binaryPath_5);
     numberOfBinaries++;
   }
   

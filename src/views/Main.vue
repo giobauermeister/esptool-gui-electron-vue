@@ -6,20 +6,20 @@
 <div class="com-input">
 <img alt="FreeSK8 Rocks" src="../assets/freesk8.png" height="50">        
 </div>
-        <!-- 1 Binary and address -->
+        <!-- 3 Binary and address -->
         <b-row no-gutters>
           <b-col>
 
             <div class="binary-input">
               <b-input-group size="sm">
                 <b-input-group-prepend>
-                  <b-button class="btn-xs" v-on:click="selectBinaryPath_1" variant="info">Browse</b-button>
+                  <b-button class="btn-xs" v-on:click="selectBinaryPath_3" variant="info">Browse</b-button>
                 </b-input-group-prepend>
                 <b-form-input
                   class="input-xs"
-                  v-model="binaryPath_1"
+                  v-model="binaryPath_3"
                   placeholder="Select firmware file"
-                  :state="binaryInputState_1"
+                  :state="binaryInputState_3"
                 ></b-form-input>
               </b-input-group>
             </div>
@@ -56,6 +56,9 @@
 
             <div class="com-input">
               <b-button class="btn-xs" v-on:click="flash" style="width: 120px;" size="sm" variant="dark">Flash</b-button>
+              &nbsp;
+              <input type="checkbox" id="checkbox" v-model="flashAll">
+              <label for="checkbox">Flash all</label>
             </div>
       
           </b-col>
@@ -144,15 +147,15 @@ export default {
   computed: {},
   data() {
     return {
-      binaryPath_1: "/Included_firmware.bin",
+      binaryPath_1: "",
       binaryPath_2: "",
-      binaryPath_3: "",
+      binaryPath_3: "/Included_firmware.bin",
       binaryPath_4: "",
       binaryPath_5: "",
-      binaryAddress_1: "0x10000",
-      binaryAddress_2: "",
-      binaryAddress_3: "",
-      binaryAddress_4: "",
+      binaryAddress_1: "0x1000",
+      binaryAddress_2: "0x8000",
+      binaryAddress_3: "0x10000",
+      binaryAddress_4: "0x110000",
       binaryAddress_5: "",
       comPort: "",
       baudrateSpeed: "921600",
@@ -188,6 +191,7 @@ export default {
       baudrateList: [{ value: 115200 }, { value: 921600 }],
       terminalData: "",
       cmdLineArgs: {
+        flashAll: this.flashAll,
         numberOfBinaries: [false, false, false, false, false],
         baudrate: this.baudrate,
         comPort: this.comPort,
@@ -355,23 +359,13 @@ export default {
       this.addressInputState_3 = null;
       this.addressInputState_4 = null;
       this.addressInputState_5 = null;
-      if (this.comPort == "" || this.baudrateSpeed == "") {                        
-        this.makeToast("danger", "Select COM port and Baudrate");
+      if (this.comPort == "") {
+        this.makeToast("danger", "Please select a COM port");
         if (this.comPort == "") this.comPortInputState = false;
-        if (this.baudrateSpeed == "") this.baudrateInputState = false;
-      } else if (this.binaryPath_1 == "" || this.binaryAddress_1 == "") {
+      } else if (this.binaryPath_3 == "" || this.binaryAddress_3 == "") {
         this.makeToast("danger", "Please select a firmware file");
-        if (this.binaryPath_1 == "") this.binaryInputState_1 = false;
-        if (this.binaryAddress_1 == "") this.addressInputState_1 = false;
-      } else if((this.binaryPath_2 != "" && this.binaryAddress_2 == "") || 
-                (this.binaryPath_3 != "" && this.binaryAddress_3 == "") || 
-                (this.binaryPath_4 != "" && this.binaryAddress_4 == "") ||
-                (this.binaryPath_5 != "" && this.binaryAddress_5 == "")) { 
-        this.makeToast("danger", "Address should not be empty");
-        if(this.binaryPath_2 != "" && this.binaryAddress_2 == "") this.addressInputState_2 = false;
-        if(this.binaryPath_3 != "" && this.binaryAddress_3 == "") this.addressInputState_3 = false;
-        if(this.binaryPath_4 != "" && this.binaryAddress_4 == "") this.addressInputState_4 = false;
-        if(this.binaryPath_5 != "" && this.binaryAddress_5 == "") this.addressInputState_5 = false;           
+        if (this.binaryPath_3 == "") this.binaryInputState_3 = false;
+        if (this.binaryAddress_3 == "") this.addressInputState_3 = false;
       } else {
         this.flashProgressValue = 0;
         this.showCheckMark = false;
@@ -379,43 +373,24 @@ export default {
         this.showSpinner = true;
         this.terminalData = "";
 
+        this.cmdLineArgs.flashAll = this.flashAll;
         this.cmdLineArgs.baudrate = this.baudrateSpeed;
         this.cmdLineArgs.comPort = this.comPort;
 
-        if(this.binaryPath_1 != "" && this.binaryAddress_1 != "") {
-          this.cmdLineArgs.numberOfBinaries[0] = true;
-          this.cmdLineArgs.binaryPath_1 = this.binaryPath_1;
-          this.cmdLineArgs.binaryAddress_1 = this.binaryAddress_1;
-        }
-
-        if(this.binaryPath_2 != "" && this.binaryAddress_2 != "") {
-          this.cmdLineArgs.numberOfBinaries[1] = true;
-          this.cmdLineArgs.binaryPath_2 = this.binaryPath_2;
-          this.cmdLineArgs.binaryAddress_2 = this.binaryAddress_2;
-        }
-
-        if(this.binaryPath_3 != "" && this.binaryAddress_3 != "") {
-          this.cmdLineArgs.numberOfBinaries[2] = true;
-          this.cmdLineArgs.binaryPath_3 = this.binaryPath_3;
-          this.cmdLineArgs.binaryAddress_3 = this.binaryAddress_3;
-        }
-
-        if(this.binaryPath_4 != "" && this.binaryAddress_4 != "") {
-          this.cmdLineArgs.numberOfBinaries[3] = true;
-          this.cmdLineArgs.binaryPath_4 = this.binaryPath_4;
-          this.cmdLineArgs.binaryAddress_4 = this.binaryAddress_4;
-        }
-
-        if(this.binaryPath_5 != "" && this.binaryAddress_5 != "") {
-          this.cmdLineArgs.numberOfBinaries[4] = true;
-          this.cmdLineArgs.binaryPath_5 = this.binaryPath_5;
-          this.cmdLineArgs.binaryAddress_5 = this.binaryAddress_5;
-        }
-
         this.cmdLineArgs.binaryPath_1 = this.binaryPath_1;
-        this.cmdLineArgs.binaryPath_2 = this.binaryPath_2;
         this.cmdLineArgs.binaryAddress_1 = this.binaryAddress_1;
+
+        this.cmdLineArgs.binaryPath_2 = this.binaryPath_2;
         this.cmdLineArgs.binaryAddress_2 = this.binaryAddress_2;
+
+        this.cmdLineArgs.binaryPath_3 = this.binaryPath_3;
+        this.cmdLineArgs.binaryAddress_3 = this.binaryAddress_3;
+
+        this.cmdLineArgs.binaryPath_4 = this.binaryPath_4;
+        this.cmdLineArgs.binaryAddress_4 = this.binaryAddress_4;
+
+        this.cmdLineArgs.binaryPath_5 = this.binaryPath_5;
+        this.cmdLineArgs.binaryAddress_5 = this.binaryAddress_5;
 
         // Async message sender
         ipcRenderer.send("start-esptool-flash", this.cmdLineArgs);
